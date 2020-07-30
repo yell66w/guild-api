@@ -19,7 +19,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get()
   getUsers(@Query() filterDto: GetUsersFilterDto): Promise<User[]> {
     return this.usersService.getUsers(filterDto);
