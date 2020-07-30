@@ -8,9 +8,12 @@ import { AuthSignUpCredentialsDto } from './dto/auth-signup-credentials.dto';
 import * as bcrypt from 'bcrypt';
 import { AuthSignInCredentialsDto } from '../auth/dto/auth-signin-credentials.dto copy';
 import { AuthRepository } from './auth.repository';
+import { JwtService } from '@nestjs/jwt';
+import { User } from 'src/users/users.entity';
 @Injectable()
 export class AuthService {
   constructor(
+    private jwtService: JwtService,
     @InjectRepository(AuthRepository)
     private authRepository: AuthRepository,
   ) {}
@@ -27,7 +30,7 @@ export class AuthService {
     }
   }
 
-  async singIn(credentials: AuthSignInCredentialsDto): Promise<void> {
+  async validateUser(credentials: AuthSignInCredentialsDto): Promise<User> {
     const { username, password } = credentials;
     const user = await this.authRepository.findOne({
       where: { username },
@@ -39,6 +42,15 @@ export class AuthService {
     if (!match) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    console.log('logged in');
+    return user;
+  }
+
+  async signIn(credentials) {
+    const user = await this.validateUser(credentials);
+    const { username, IGN, ap, gp, createdAt } = user;
+    const payload = { username, IGN, ap, gp, createdAt };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }
