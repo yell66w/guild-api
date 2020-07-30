@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { UserStatus, UserRole } from './users.categories';
 @Entity()
-export class User extends BaseEntity {
+export class User {
   @PrimaryGeneratedColumn('uuid')
   id: number;
 
@@ -24,4 +25,10 @@ export class User extends BaseEntity {
 
   @Column()
   salt: string;
+
+  @Column({ default: UserStatus.PENDING })
+  status: string;
+
+  @Column({ default: UserRole.MEMBER })
+  role: string;
 }

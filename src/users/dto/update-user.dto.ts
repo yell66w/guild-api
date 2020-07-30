@@ -1,4 +1,5 @@
 import { Length, IsOptional, IsNumber, IsNotEmpty } from 'class-validator';
+import { UserRole } from '../users.categories';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -27,4 +28,12 @@ export class UpdateUserDto {
   @IsOptional()
   @IsNumber()
   gp: number;
+
+  @IsOptional()
+  @IsNotEmpty()
+  role: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  status: string;
 }

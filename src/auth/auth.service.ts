@@ -47,8 +47,8 @@ export class AuthService {
 
   async signIn(credentials) {
     const user = await this.validateUser(credentials);
-    const { username, id, IGN } = user;
-    const payload = { username, id, IGN };
+    const { username, id, IGN, role, status } = user;
+    const payload = { username, id, IGN, role, status };
     return {
       access_token: this.jwtService.sign(payload),
     };

@@ -19,17 +19,25 @@ export class UsersService {
   async getUsers(filterDto: GetUsersFilterDto): Promise<User[]> {
     return await this.usersRepository.getUsers(filterDto);
   }
-
+  async getCurrentUser(id: number): Promise<User> {
+    const user = await this.usersRepository.findOne(id);
+    user.password = undefined;
+    user.salt = undefined;
+    return user;
+  }
   async getOne(id: number): Promise<User> {
     const found = await this.usersRepository.findOne(id);
     if (!found) throw new NotFoundException('User not found');
     return found;
   }
 
-  async updateUsers(id: number, updateUserDto: UpdateUserDto): Promise<User> {
+  async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     try {
       await this.usersRepository.update(id, updateUserDto);
-      return await this.getOne(id);
+      const user = await this.getOne(id);
+      delete user.password;
+      delete user.salt;
+      return user;
     } catch (error) {
       throw new ConflictException('Cant Update User');
     }
