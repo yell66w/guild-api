@@ -45,15 +45,6 @@ export class UsersController {
     return this.usersService.getOne(id);
   }
 
-  @Put(':id')
-  @Roles('ADMIN')
-  @UseGuards(RolesGuard)
-  updateUser(
-    @Param('id', ParseUUIDPipe) id: number,
-    @Body(UserUpdateValidationPipe) updateUserDto: UpdateUserDto,
-  ): Promise<User> {
-    return this.usersService.updateUser(id, updateUserDto);
-  }
   @Put(':id/update-points')
   @Roles('ADMIN')
   @UseGuards(RolesGuard)
@@ -62,6 +53,16 @@ export class UsersController {
     @Body() manageUserPointsDto: ManageUserPointsDto,
   ): Promise<User> {
     return this.usersService.updatePoints(id, manageUserPointsDto);
+  }
+
+  @Put(':id')
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  updateUser(
+    @Param('id', ParseUUIDPipe) id: number,
+    @Body(UserUpdateValidationPipe) updateUserDto: UpdateUserDto,
+  ): Promise<User> {
+    return this.usersService.updateUser(id, updateUserDto);
   }
 
   @Delete(':id')

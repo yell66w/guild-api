@@ -3,6 +3,7 @@ import {
   ConflictException,
   UnauthorizedException,
   NotFoundException,
+  MethodNotAllowedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthSignUpCredentialsDto } from './dto/auth-signup-credentials.dto';
@@ -12,6 +13,9 @@ import { AuthRepository } from './auth.repository';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/users.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { SendGPSDto } from './dto/send-gps.dto';
+import { Transaction } from '../users/transactions.entity';
+import { getConnection } from 'typeorm';
 @Injectable()
 export class AuthService {
   constructor(
@@ -61,6 +65,20 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
     return found;
+  }
+  async sendGPS(
+    userId: number,
+    receiverId: number,
+    sendGPSDto: SendGPSDto,
+  ): Promise<any> {
+    const user = await this.getOne(userId);
+    const receiver = await this.getOne(receiverId);
+    const { amount } = sendGPSDto;
+    if (user.gp >= amount) {
+      return await this.authRepository.sendGPS(user, receiver, amount);
+    } else {
+      throw new MethodNotAllowedException('GP is insufficient');
+    }
   }
 
   async changePassword(

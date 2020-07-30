@@ -1,5 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+} from 'typeorm';
 import { UserStatus, UserRole } from './users.categories';
+import { Transaction } from './transactions.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -14,10 +22,10 @@ export class User {
   @Column()
   password: string;
 
-  @Column('decimal', { precision: 11, scale: 6, default: () => 0 })
+  @Column('double precision', { default: () => 0 })
   ap: number;
 
-  @Column('decimal', { precision: 11, scale: 6, default: () => 0 })
+  @Column('double precision', { default: () => 0 })
   gp: number;
 
   @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })
@@ -31,4 +39,10 @@ export class User {
 
   @Column({ default: UserRole.MEMBER })
   role: string;
+
+  @OneToMany(
+    () => Transaction,
+    transaction => transaction.user,
+  )
+  public transactions!: Transaction[];
 }
