@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './users.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,20 +23,33 @@ export class UsersService {
   }
 
   async getOne(id: number): Promise<User> {
-    return await this.usersRepository.getOne(id);
+    const found = await this.usersRepository.findOne(id);
+    if (!found) throw new NotFoundException('User not found');
+    return found;
   }
 
   async register(createUserDto: CreateUserDto): Promise<User> {
-    return await this.usersRepository.save(createUserDto);
+    try {
+      return await this.usersRepository.save(createUserDto);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new ConflictException('Invalid Form');
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
   }
 
   async updateUsers(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    await this.usersRepository.updateUser(id, updateUserDto);
-    return await this.getOne(id);
+    try {
+      await this.usersRepository.update(id, updateUserDto);
+      return await this.getOne(id);
+    } catch (error) {
+      throw new ConflictException('Cant Update User');
+    }
   }
 
   async deleteUser(id: number): Promise<void> {
-    await this.getOne(id);
     await this.usersRepository.delete(id);
   }
 }

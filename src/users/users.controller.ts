@@ -15,26 +15,26 @@ import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './users.entity';
 
-@Controller('users')
+@Controller()
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Get()
+  @Get('users')
   getUsers(@Query() filterDto: GetUsersFilterDto): Promise<User[]> {
     return this.usersService.getUsers(filterDto);
   }
 
-  @Get(':id')
+  @Get('users/:id')
   getOne(@Param('id', ParseUUIDPipe) id: number): Promise<User> {
     return this.usersService.getOne(id);
   }
 
-  @Post()
+  @Post('auth/register')
   register(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.register(createUserDto);
   }
 
-  @Put(':id')
+  @Put('users/:id')
   updateUser(
     @Param('id', ParseUUIDPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -42,7 +42,7 @@ export class UsersController {
     return this.usersService.updateUsers(id, updateUserDto);
   }
 
-  @Delete(':id')
+  @Delete('users/:id')
   deleteUser(@Param('id', ParseUUIDPipe) id: number): Promise<void> {
     return this.usersService.deleteUser(id);
   }
