@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   UnauthorizedException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthSignUpCredentialsDto } from './dto/auth-signup-credentials.dto';
@@ -10,6 +11,7 @@ import { AuthSignInCredentialsDto } from '../auth/dto/auth-signin-credentials.dt
 import { AuthRepository } from './auth.repository';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/users.entity';
+import { ChangePasswordDto } from './dto/change-password.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -52,5 +54,34 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+  async getOne(id: number): Promise<User> {
+    const found = await this.authRepository.findOne(id);
+    if (!found) {
+      throw new NotFoundException('User not found');
+    }
+    return found;
+  }
+
+  async changePassword(
+    id: number,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<boolean> {
+    const { oldPassword, newPassword, confirmNewPassword } = changePasswordDto;
+    const user = await this.getOne(id);
+    const match = await bcrypt.compare(oldPassword, user.password);
+
+    if (!match) {
+      throw new UnauthorizedException('Password is not correct');
+    }
+    if (newPassword !== confirmNewPassword) {
+      throw new UnauthorizedException('Passwords does not match');
+    }
+
+    user.salt = await bcrypt.genSalt();
+    user.password = await bcrypt.hash(newPassword, user.salt);
+    await this.authRepository.save(user);
+
+    return true;
   }
 }

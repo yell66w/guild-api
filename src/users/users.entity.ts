@@ -14,10 +14,10 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ default: () => 0 })
+  @Column('decimal', { precision: 11, scale: 6, default: () => 0 })
   ap: number;
 
-  @Column({ default: () => 0 })
+  @Column('decimal', { precision: 11, scale: 6, default: () => 0 })
   gp: number;
 
   @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })

@@ -8,6 +8,7 @@ import { User } from './users.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
 import { GetUsersFilterDto } from './dto/get-users-filter.dto';
+import { ManageUserPointsDto } from './dto/manage-user-points.dto copy';
 
 @Injectable()
 export class UsersService {
@@ -32,15 +33,29 @@ export class UsersService {
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<User> {
-    try {
-      await this.usersRepository.update(id, updateUserDto);
-      const user = await this.getOne(id);
-      delete user.password;
-      delete user.salt;
-      return user;
-    } catch (error) {
-      throw new ConflictException('Cant Update User');
-    }
+    let user = await this.getOne(id);
+    const { role, status } = updateUserDto;
+    if (role) user.role = role;
+    if (status) user.status = status;
+
+    user = await this.usersRepository.save(user);
+    user.password = undefined;
+    user.salt = undefined;
+    return user;
+  }
+  async updatePoints(
+    id: number,
+    manageUserPointsDto: ManageUserPointsDto,
+  ): Promise<User> {
+    let user = await this.getOne(id);
+    const { ap, gp } = manageUserPointsDto;
+    if (ap) user.ap = ap;
+    if (gp) user.gp = gp;
+
+    user = await this.usersRepository.save(user);
+    user.password = undefined;
+    user.salt = undefined;
+    return user;
   }
 
   async deleteUser(id: number): Promise<void> {
