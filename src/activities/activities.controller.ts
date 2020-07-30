@@ -7,14 +7,17 @@ import {
   ParseUUIDPipe,
   Put,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ActivitiesService } from './activities.service';
 import { Activity } from './activities.entity';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { CreateActivityValidationPipe } from './pipes/create-activity-validation.pipe';
 import { UpdateActivityDto } from './dto/update-activity.dto';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 @Controller('activities')
+@UseGuards(new JwtAuthGuard())
 export class ActivitiesController {
   constructor(private activitiesService: ActivitiesService) {}
 

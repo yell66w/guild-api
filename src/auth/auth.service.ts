@@ -72,10 +72,10 @@ export class AuthService {
     const user = await this.getOne(userId);
     const receiver = await this.getOne(receiverId);
     const { amount } = sendGPSDto;
-    if (user.gp >= amount) {
+    if (user.gp >= amount && amount > 0) {
       return await this.authRepository.sendGPS(user, receiver, amount);
     } else {
-      throw new MethodNotAllowedException('GP is insufficient');
+      throw new MethodNotAllowedException('Please check your GP');
     }
   }
 

@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   MethodNotAllowedException,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { ActivityPointsRepository } from './activity-points.repository';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +10,7 @@ import { ActivityPoint } from './activity-points.entity';
 import { CreateActivityPointDto } from './dto/create-activity-point.dto';
 import { Activity } from 'src/activities/activities.entity';
 import { UpdateActivityPointDto } from './dto/update-activity-point.dto';
+import { ActivityCategory } from 'src/activities/activities.categories';
 
 @Injectable()
 export class ActivityPointsService {
@@ -27,20 +29,22 @@ export class ActivityPointsService {
     }
     return found;
   }
-
   async createActivityPoint(
     createActivityPointDto: CreateActivityPointDto,
   ): Promise<ActivityPoint> {
     const { activityId } = createActivityPointDto;
     const activity = await Activity.findOne(activityId);
-    delete createActivityPointDto.activityId;
-    const activityPoint = await this.activityPointsRepository.save({
-      ...createActivityPointDto,
-      activity,
-    });
-    return await this.activityPointsRepository.save(activityPoint);
+    if (activity.category === ActivityCategory.PAYDAY) {
+      delete createActivityPointDto.activityId;
+      const activityPoint = await this.activityPointsRepository.save({
+        ...createActivityPointDto,
+        activity,
+      });
+      return await this.activityPointsRepository.save(activityPoint);
+    } else {
+      throw new NotAcceptableException('Activity must be of type PAYDAY');
+    }
   }
-
   async updateActivityPoint(
     id: number,
     updateActivityPointDto: UpdateActivityPointDto,
@@ -54,7 +58,6 @@ export class ActivityPointsService {
       );
     }
   }
-
   async deleteActivityPoint(id: number): Promise<void> {
     await this.activityPointsRepository.delete(id);
   }
