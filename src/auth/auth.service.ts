@@ -14,8 +14,6 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/users.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { SendGPSDto } from './dto/send-gps.dto';
-import { Transaction } from '../users/transactions.entity';
-import { getConnection } from 'typeorm';
 @Injectable()
 export class AuthService {
   constructor(

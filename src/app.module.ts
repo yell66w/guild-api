@@ -4,6 +4,7 @@ import { Connection } from 'typeorm';
 import { UserHttpModule } from './users/users-http.module';
 import { AuthHttpModule } from './auth/auth-http.module';
 import { ActivityHttpModule } from './activities/activities-http.module';
+import { ActivityPointsHttpModule } from './activity-points/activities-http.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { ActivityHttpModule } from './activities/activities-http.module';
     UserHttpModule,
     AuthHttpModule,
     ActivityHttpModule,
+    ActivityPointsHttpModule,
   ],
 })
 export class AppModule {

@@ -1,11 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  BaseEntity,
+} from 'typeorm';
 import { ActivityCategory } from './activities.categories';
+import { ActivityPoint } from 'src/activity-points/activity-points.entity';
 @Entity()
-export class Activity {
+export class Activity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })
@@ -13,4 +20,10 @@ export class Activity {
 
   @Column({ default: ActivityCategory.DEFAULT })
   category: string;
+
+  @OneToMany(
+    () => ActivityPoint,
+    activityPoint => activityPoint.activity,
+  )
+  activityPoints: ActivityPoint[];
 }

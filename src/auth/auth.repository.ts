@@ -2,7 +2,6 @@ import { Repository, EntityRepository, getConnection } from 'typeorm';
 import { User } from '../users/users.entity';
 import { AuthSignUpCredentialsDto } from './dto/auth-signup-credentials.dto';
 import * as bcrypt from 'bcrypt';
-import { SendGPSDto } from './dto/send-gps.dto';
 import { Transaction } from 'src/users/transactions.entity';
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
