@@ -8,7 +8,6 @@ import {
   ParseUUIDPipe,
   Delete,
   UseGuards,
-  Request,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetUsersFilterDto } from './dto/get-users-filter.dto';
@@ -17,6 +16,10 @@ import { User } from './users.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { GetUser } from './decorators/get-user.decorator';
 import { UserUpdateValidationPipe } from './pipes/user-update-validation.pipe';
+import { RolesGuard } from './guards/roles.guard';
+import { Roles } from './decorators/roles.decorator';
+import { StatusesGuard } from './guards/statuses.guard';
+import { Statuses } from './decorators/statuses.decorator';
 
 @Controller('users')
 @UseGuards(new JwtAuthGuard())
@@ -24,6 +27,9 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
+  @Roles('ADMIN')
+  @Statuses('APPROVED')
+  @UseGuards(RolesGuard, StatusesGuard)
   getUsers(@Query() filterDto: GetUsersFilterDto): Promise<User[]> {
     return this.usersService.getUsers(filterDto);
   }
@@ -34,11 +40,15 @@ export class UsersController {
   }
 
   @Get(':id')
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
   getOne(@Param('id', ParseUUIDPipe) id: number): Promise<User> {
     return this.usersService.getOne(id);
   }
 
   @Put(':id')
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
   updateUser(
     @Param('id', ParseUUIDPipe) id: number,
     @Body(UserUpdateValidationPipe)
@@ -48,6 +58,8 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
   deleteUser(@Param('id', ParseUUIDPipe) id: number): Promise<void> {
     return this.usersService.deleteUser(id);
   }
