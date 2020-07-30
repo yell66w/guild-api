@@ -7,14 +7,14 @@ import { AuthSignInCredentialsDto } from './dto/auth-signin-credentials.dto copy
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/sign-up')
+  @Post('sign-up')
   signUp(
     @Body() authSignUpCredentials: AuthSignUpCredentialsDto,
   ): Promise<void> {
     return this.authService.signUp(authSignUpCredentials);
   }
 
-  @Post('/sign-in')
+  @Post('sign-in')
   signIn(
     @Body() authSignInCredentials: AuthSignInCredentialsDto,
   ): Promise<void> {
