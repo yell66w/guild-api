@@ -21,4 +21,7 @@ export class User extends BaseEntity {
 
   @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })
   createdAt: Date;
+
+  @Column()
+  salt: string;
 }

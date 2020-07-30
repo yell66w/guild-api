@@ -10,31 +10,25 @@ import {
   Delete,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './users.entity';
 
-@Controller()
+@Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Get('users')
+  @Get()
   getUsers(@Query() filterDto: GetUsersFilterDto): Promise<User[]> {
     return this.usersService.getUsers(filterDto);
   }
 
-  @Get('users/:id')
+  @Get(':id')
   getOne(@Param('id', ParseUUIDPipe) id: number): Promise<User> {
     return this.usersService.getOne(id);
   }
 
-  @Post('auth/register')
-  register(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.register(createUserDto);
-  }
-
-  @Put('users/:id')
+  @Put(':id')
   updateUser(
     @Param('id', ParseUUIDPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -42,7 +36,7 @@ export class UsersController {
     return this.usersService.updateUsers(id, updateUserDto);
   }
 
-  @Delete('users/:id')
+  @Delete(':id')
   deleteUser(@Param('id', ParseUUIDPipe) id: number): Promise<void> {
     return this.usersService.deleteUser(id);
   }

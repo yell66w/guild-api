@@ -1,8 +1,6 @@
 import { Repository, EntityRepository } from 'typeorm';
 import { User } from './users.entity';
 import { GetUsersFilterDto } from './dto/get-users-filter.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { NotFoundException, ForbiddenException } from '@nestjs/common';
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {

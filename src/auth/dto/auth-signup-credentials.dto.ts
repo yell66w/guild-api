@@ -1,6 +1,6 @@
-import { IsNotEmpty, Length } from 'class-validator';
+import { IsNotEmpty, Length, IsEmpty } from 'class-validator';
 
-export class CreateUserDto {
+export class AuthSignUpCredentialsDto {
   @IsNotEmpty({ message: 'IGN is required' })
   @Length(3, 30, {
     message: 'The IGN must be at least 3 but not longer than 30 characters',
@@ -20,6 +20,14 @@ export class CreateUserDto {
       'The password must be at least 6 but not longer than 30 characters',
   })
   password: string;
-  ap: number;
-  gp: number;
+
+  @IsNotEmpty({ message: 'confirm password is required' })
+  @Length(6, 30, {
+    message:
+      'The confirm password must be at least 6 but not longer than 30 characters',
+  })
+  confirmPassword: string;
+
+  @IsEmpty()
+  salt: string;
 }
