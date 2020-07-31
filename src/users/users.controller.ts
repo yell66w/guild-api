@@ -20,6 +20,8 @@ import { RolesGuard } from './guards/roles.guard';
 import { ApprovedGuard } from './guards/approved.guard';
 import { Roles } from './decorators/roles.decorator';
 import { ManageUserPointsDto } from './dto/manage-user-points.dto copy';
+import { DonateItemDto } from './dto/donate-item.dto';
+import { RedeemItemDto } from './dto/redeem-item.dto';
 
 @Controller('users')
 @UseGuards(new JwtAuthGuard(), new ApprovedGuard())
@@ -43,6 +45,26 @@ export class UsersController {
   @UseGuards(RolesGuard)
   getOne(@Param('id', ParseUUIDPipe) id: number): Promise<User> {
     return this.usersService.getOne(id);
+  }
+
+  @Put('donate')
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  donate(
+    @GetUser() user: User,
+    @Body() donateItemDto: DonateItemDto,
+  ): Promise<any> {
+    return this.usersService.donate(user.IGN, donateItemDto);
+  }
+
+  @Put('redeem')
+  @Roles('ADMIN')
+  @UseGuards(RolesGuard)
+  redeem(
+    @GetUser() user: User,
+    @Body() redeemItemDto: RedeemItemDto,
+  ): Promise<any> {
+    return this.usersService.redeem(user.IGN, redeemItemDto);
   }
 
   @Put(':id/update-points')

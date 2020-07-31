@@ -9,6 +9,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersRepository } from './users.repository';
 import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 import { ManageUserPointsDto } from './dto/manage-user-points.dto copy';
+import { DonateItemDto } from './dto/donate-item.dto';
+import { Item } from 'src/items/items.entity';
+import { GetUser } from './decorators/get-user.decorator';
+import { RedeemItemDto } from './dto/redeem-item.dto';
 
 @Injectable()
 export class UsersService {
@@ -62,5 +66,39 @@ export class UsersService {
     const result = await this.usersRepository.delete(id);
     if (result.affected <= 0)
       throw new NotFoundException('User does not exist');
+  }
+
+  async donate(author: string, donateItemDto: DonateItemDto): Promise<any> {
+    const { userId, itemId, qty } = donateItemDto;
+    const item = await Item.findOne(itemId);
+    const user = await this.usersRepository.findOne(userId);
+    if (item && user) {
+      item.qty += qty;
+      user.gp += item.gp_price * qty;
+      await Item.save(item);
+      await this.usersRepository.save(user);
+      return {
+        message: 'Succesfully donated an item',
+      };
+    } else {
+      throw new NotFoundException('Item or User does not exist');
+    }
+  }
+
+  async redeem(author: string, redeemItemDto: RedeemItemDto): Promise<any> {
+    const { userId, itemId, qty } = redeemItemDto;
+    const item = await Item.findOne(itemId);
+    const user = await this.usersRepository.findOne(userId);
+    if (item && user) {
+      item.qty -= qty;
+      user.gp -= item.gp_price * qty;
+      await Item.save(item);
+      await this.usersRepository.save(user);
+      return {
+        message: 'Succesfully redeemed an item',
+      };
+    } else {
+      throw new NotFoundException('Item or User does not exist');
+    }
   }
 }

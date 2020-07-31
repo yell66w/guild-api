@@ -1,11 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { UserStatus, UserRole } from './users.categories';
 import { Transaction } from './transactions.entity';
 import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
@@ -52,4 +45,7 @@ export class User {
     attendanceUser => attendanceUser.user,
   )
   public records!: Attendance_User[];
+
+  //you're about to make a donations table user-item
+  //and a redemption table user-item
 }
