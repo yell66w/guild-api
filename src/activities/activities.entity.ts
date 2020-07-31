@@ -19,7 +19,11 @@ export class Activity extends BaseEntity {
   @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })
   createdAt: Date;
 
-  @Column({ default: ActivityCategory.DEFAULT })
+  @Column({
+    type: 'enum',
+    enum: ActivityCategory,
+    default: ActivityCategory.DEFAULT,
+  })
   category: string;
 
   @OneToMany(

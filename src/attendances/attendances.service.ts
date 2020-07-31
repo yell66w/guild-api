@@ -11,7 +11,6 @@ import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { Activity } from 'src/activities/activities.entity';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
-import { getConnection, getRepository } from 'typeorm';
 
 @Injectable()
 export class AttendancesService {

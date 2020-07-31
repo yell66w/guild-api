@@ -4,8 +4,4 @@ export class MarkAttendanceDto {
   @IsNotEmpty()
   @IsString()
   mark: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  percentage: number;
 }

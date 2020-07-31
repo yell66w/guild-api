@@ -35,10 +35,10 @@ export class User {
   @Column()
   salt: string;
 
-  @Column({ default: UserStatus.PENDING })
+  @Column({ type: 'enum', enum: UserStatus, default: UserStatus.PENDING })
   status: string;
 
-  @Column({ default: UserRole.MEMBER })
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.MEMBER })
   role: string;
 
   @OneToMany(

@@ -36,7 +36,11 @@ export class Attendance extends BaseEntity {
   @Column()
   author: string;
 
-  @Column({ default: AttendancesStatus.OPEN })
+  @Column({
+    type: 'enum',
+    enum: AttendancesStatus,
+    default: AttendancesStatus.OPEN,
+  })
   status: string;
 
   @Column()

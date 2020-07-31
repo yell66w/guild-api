@@ -6,7 +6,6 @@ import { Transaction } from 'src/users/transactions.entity';
 import { MarkAttendanceDto } from 'src/attendance-user/dto/mark-attendance.dto';
 import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
 import { Attendance } from 'src/attendances/attendances.entity';
-import { NotFoundException } from '@nestjs/common';
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
   async signUp(credentials: AuthSignUpCredentialsDto): Promise<void> {
@@ -38,26 +37,52 @@ export class AuthRepository extends Repository<User> {
     attendanceId: number,
     markAttendanceDto: MarkAttendanceDto,
   ): Promise<any> {
-    const { mark, percentage } = markAttendanceDto;
+    const { mark } = markAttendanceDto;
+    const user = await this.findOne(userId);
+    const attendance = await Attendance.findOne(attendanceId, {
+      select: ['ap_worth'],
+    });
 
     const result = await Attendance_User.delete({
       attendanceId,
       userId,
     });
     if (result.affected <= 0) {
-      await Attendance_User.create({
+      let percentage: number = this.computeMarkPercentage(mark);
+      const record = await Attendance_User.create({
         attendanceId,
         userId,
         percentage,
         mark,
       }).save();
+      user.ap += attendance.ap_worth * record.percentage;
+      await this.save(user);
+
       return {
         message: 'marked',
+        received: attendance.ap_worth,
+        current_ap: user.ap,
       };
     } else {
+      user.ap -= attendance.ap_worth;
+
+      await this.save(user);
       return {
         message: 'unmarked',
+        taken: attendance.ap_worth,
+        current_ap: user.ap,
       };
+    }
+  }
+
+  private computeMarkPercentage(mark: string) {
+    switch (mark) {
+      case 'ONTIME':
+        return 1;
+      case 'LATE':
+        return 0.5;
+      default:
+        break;
     }
   }
 }
