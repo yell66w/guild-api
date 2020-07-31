@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, Min } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, Min, IsInt } from 'class-validator';
 
 export class CreateItemDto {
   @IsNotEmpty()
@@ -21,6 +21,7 @@ export class CreateItemDto {
 
   @IsNotEmpty()
   @IsNumber()
+  @IsInt()
   @Min(0)
   qty: number;
 }
