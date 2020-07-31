@@ -3,7 +3,7 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Activity } from './activities.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ActivitiesRepository } from './activities.repository';
@@ -18,7 +18,7 @@ export class ActivitiesService {
   ) {}
   async getActivities(): Promise<Activity[]> {
     return await this.activitiesRepository.find({
-      relations: ['activityPoints'],
+      relations: ['activityPoints', 'attendances'],
     });
   }
   async getOne(id: number): Promise<Activity> {
@@ -48,7 +48,9 @@ export class ActivitiesService {
       }
     }
   }
-  async deleteActivity(id: number): Promise<void> {
-    await this.activitiesRepository.delete(id);
+  async deleteActivity(id: number): Promise<any> {
+    const result = await this.activitiesRepository.delete(id);
+    if (result.affected <= 0)
+      throw new NotFoundException('Activity does not exist');
   }
 }

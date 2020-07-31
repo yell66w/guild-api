@@ -59,6 +59,8 @@ export class ActivityPointsService {
     }
   }
   async deleteActivityPoint(id: number): Promise<void> {
-    await this.activityPointsRepository.delete(id);
+    const result = await this.activityPointsRepository.delete(id);
+    if (result.affected <= 0)
+      throw new NotFoundException('Activity Point does not exist');
   }
 }

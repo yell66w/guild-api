@@ -7,5 +7,6 @@ import { AttendancesController } from './attendances.controller';
   imports: [AttendancesModule],
   providers: [AttendancesService],
   controllers: [AttendancesController],
+  exports: [AttendancesService],
 })
 export class AttendancesHttpModule {}

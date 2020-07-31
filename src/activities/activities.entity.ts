@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { ActivityCategory } from './activities.categories';
 import { ActivityPoint } from 'src/activity-points/activity-points.entity';
+import { Attendance } from 'src/attendances/attendances.entity';
 @Entity()
 export class Activity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -26,4 +27,10 @@ export class Activity extends BaseEntity {
     activityPoint => activityPoint.activity,
   )
   activityPoints: ActivityPoint[];
+
+  @OneToMany(
+    () => Attendance,
+    attendance => attendance.activity,
+  )
+  attendances: Attendance[];
 }
