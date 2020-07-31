@@ -1,4 +1,12 @@
-import { IsNotEmpty, IsUUID, IsIn, IsNumber, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsUUID,
+  IsIn,
+  IsNumber,
+  Min,
+  IsOptional,
+  Max,
+} from 'class-validator';
 
 export class DonateItemDto {
   @IsNotEmpty()
@@ -13,4 +21,10 @@ export class DonateItemDto {
   @IsNumber()
   @Min(1)
   qty: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  discount: number;
 }

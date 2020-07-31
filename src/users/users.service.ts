@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  MethodNotAllowedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './users.entity';
@@ -69,12 +70,12 @@ export class UsersService {
   }
 
   async donate(author: string, donateItemDto: DonateItemDto): Promise<any> {
-    const { userId, itemId, qty } = donateItemDto;
+    const { userId, itemId, qty, discount } = donateItemDto;
     const item = await Item.findOne(itemId);
     const user = await this.usersRepository.findOne(userId);
     if (item && user) {
       item.qty += qty;
-      user.gp += item.gp_price * qty;
+      user.gp += (item.gp_price - item.gp_price * (discount / 100)) * qty;
       await Item.save(item);
       await this.usersRepository.save(user);
       return {
@@ -86,12 +87,16 @@ export class UsersService {
   }
 
   async redeem(author: string, redeemItemDto: RedeemItemDto): Promise<any> {
-    const { userId, itemId, qty } = redeemItemDto;
+    const { userId, itemId, qty, discount } = redeemItemDto;
     const item = await Item.findOne(itemId);
     const user = await this.usersRepository.findOne(userId);
+
+    if (item.qty <= 0) throw new MethodNotAllowedException('No items in stock');
+    if (user.gp < (item.gp_price - item.gp_price * (discount / 100)) * qty)
+      throw new MethodNotAllowedException('User has insufficient GP');
     if (item && user) {
       item.qty -= qty;
-      user.gp -= item.gp_price * qty;
+      user.gp -= (item.gp_price - item.gp_price * (discount / 100)) * qty;
       await Item.save(item);
       await this.usersRepository.save(user);
       return {
