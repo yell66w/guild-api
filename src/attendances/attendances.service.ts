@@ -9,8 +9,9 @@ import { AttendancesRepository } from './attendances.repository';
 import { Attendance } from './attendances.entity';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { Activity } from 'src/activities/activities.entity';
-import { triggerAsyncId } from 'async_hooks';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
+import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
+import { getConnection, getRepository } from 'typeorm';
 
 @Injectable()
 export class AttendancesService {
@@ -18,14 +19,27 @@ export class AttendancesService {
     @InjectRepository(AttendancesRepository)
     private attendancesRepository: AttendancesRepository,
   ) {}
-
   async getAttendances(): Promise<Attendance[]> {
-    return await this.attendancesRepository.find();
+    return await this.attendancesRepository.find({
+      relations: ['participants'],
+    });
   }
   async getOne(id: number): Promise<Attendance> {
-    const found = await this.attendancesRepository.findOne(id);
+    const found = await this.attendancesRepository.findOne(id, {
+      relations: ['participants'],
+    });
     if (!found) throw new NotFoundException('Attendance Not Found');
     return found;
+  }
+  async getParticipants(id: number): Promise<any> {
+    const records = Attendance_User.find({
+      where: { attendanceId: id },
+      relations: ['user'],
+    });
+    let participants = (await records).map(record => {
+      return record.user.IGN;
+    });
+    return participants;
   }
   async createAttendance(
     author: string,
@@ -50,7 +64,6 @@ export class AttendancesService {
       throw new ConflictException(error.message);
     }
   }
-
   async updateAttendance(
     id: number,
     updateAttendanceDto: UpdateAttendanceDto,

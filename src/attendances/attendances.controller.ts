@@ -26,10 +26,15 @@ export class AttendancesController {
   getAttendance(): Promise<Attendance[]> {
     return this.attendancesService.getAttendances();
   }
+  @Get(':id/participants')
+  getParticipants(@Param('id', ParseUUIDPipe) id: number): Promise<any> {
+    return this.attendancesService.getParticipants(id);
+  }
   @Get(':id')
   getOne(@Param('id', ParseUUIDPipe) id: number): Promise<Attendance> {
     return this.attendancesService.getOne(id);
   }
+
   @Post()
   createAttendance(
     @GetUser() user: User,

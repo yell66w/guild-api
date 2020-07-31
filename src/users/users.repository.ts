@@ -6,7 +6,10 @@ import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 export class UsersRepository extends Repository<User> {
   async getUsers(filterDto: GetUsersFilterDto) {
     const { search } = filterDto;
-    const query = this.createQueryBuilder('user');
+    const query = this.createQueryBuilder('user').leftJoinAndSelect(
+      'user.records',
+      'attendance_user',
+    );
 
     if (search) {
       query.andWhere('user.IGN LIKE :search OR user.username LIKE :search', {

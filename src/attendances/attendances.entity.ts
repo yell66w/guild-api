@@ -4,9 +4,11 @@ import {
   Column,
   BaseEntity,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { Activity } from 'src/activities/activities.entity';
 import { AttendancesStatus } from './attendances.categories';
+import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
 
 @Entity()
 export class Attendance extends BaseEntity {
@@ -46,4 +48,10 @@ export class Attendance extends BaseEntity {
     { cascade: true, onDelete: 'CASCADE' },
   )
   activity: Activity;
+
+  @OneToMany(
+    () => Attendance_User,
+    attendanceUser => attendanceUser.attendance,
+  )
+  public participants: Attendance_User;
 }

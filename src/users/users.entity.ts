@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { UserStatus, UserRole } from './users.categories';
 import { Transaction } from './transactions.entity';
+import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -45,4 +46,10 @@ export class User {
     transaction => transaction.user,
   )
   public transactions!: Transaction[];
+
+  @OneToMany(
+    () => Attendance_User,
+    attendanceUser => attendanceUser.user,
+  )
+  public records!: Attendance_User[];
 }

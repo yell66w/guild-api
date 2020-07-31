@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UseGuards, Param } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Param,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { AuthSignUpCredentialsDto } from './dto/auth-signup-credentials.dto';
 import { AuthService } from './auth.service';
 import { AuthSignInCredentialsDto } from './dto/auth-signin-credentials.dto copy';
@@ -7,6 +14,8 @@ import { User } from 'src/users/users.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { SendGPSDto } from './dto/send-gps.dto';
+import { MarkAttendanceDto } from 'src/attendance-user/dto/mark-attendance.dto';
+import { RecordValidationPipe } from 'src/attendance-user/pipe/record-validation';
 
 @Controller('auth')
 export class AuthController {
@@ -43,5 +52,19 @@ export class AuthController {
     @Body() sendGPSDto: SendGPSDto,
   ): Promise<any> {
     return this.authService.sendGPS(user.id, receiverId, sendGPSDto);
+  }
+
+  @Post(':id/attend')
+  @UseGuards(JwtAuthGuard)
+  markAttendance(
+    @GetUser() user: User,
+    @Param('id', ParseUUIDPipe) attendanceId: number,
+    @Body(RecordValidationPipe) markAttendanceDto: MarkAttendanceDto,
+  ): Promise<any> {
+    return this.authService.markAttendance(
+      user.id,
+      attendanceId,
+      markAttendanceDto,
+    );
   }
 }

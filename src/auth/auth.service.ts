@@ -14,6 +14,9 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/users/users.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { SendGPSDto } from './dto/send-gps.dto';
+import { MarkAttendanceDto } from 'src/attendance-user/dto/mark-attendance.dto';
+import { Attendance } from 'src/attendances/attendances.entity';
+import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
 @Injectable()
 export class AuthService {
   constructor(
@@ -99,5 +102,17 @@ export class AuthService {
     await this.authRepository.save(user);
 
     return true;
+  }
+
+  async markAttendance(
+    userId: number,
+    attendanceId: number,
+    markAttendanceDto: MarkAttendanceDto,
+  ): Promise<any> {
+    return this.authRepository.markAttendance(
+      userId,
+      attendanceId,
+      markAttendanceDto,
+    );
   }
 }
