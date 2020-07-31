@@ -1,0 +1,26 @@
+import { IsNotEmpty, IsString, IsNumber, Min } from 'class-validator';
+
+export class CreateItemDto {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @IsNotEmpty()
+  @IsString()
+  type: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  ap_worth: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  gp_price: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @Min(0)
+  qty: number;
+}

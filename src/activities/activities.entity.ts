@@ -6,8 +6,8 @@ import {
   BaseEntity,
 } from 'typeorm';
 import { ActivityCategory } from './activities.categories';
-import { ActivityPoint } from 'src/activity-points/activity-points.entity';
-import { Attendance } from 'src/attendances/attendances.entity';
+import { ActivityPoint } from '../activity-points/activity-points.entity';
+import { Attendance } from '../attendances/attendances.entity';
 @Entity()
 export class Activity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')

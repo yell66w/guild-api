@@ -6,6 +6,7 @@ import { AuthHttpModule } from './auth/auth-http.module';
 import { ActivityHttpModule } from './activities/activities-http.module';
 import { ActivityPointsHttpModule } from './activity-points/activities-http.module';
 import { AttendancesHttpModule } from './attendances/attendances-http.module';
+import { ItemsHttpModule } from './items/items-http.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AttendancesHttpModule } from './attendances/attendances-http.module';
     ActivityHttpModule,
     ActivityPointsHttpModule,
     AttendancesHttpModule,
+    ItemsHttpModule,
   ],
 })
 export class AppModule {
