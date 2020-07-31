@@ -39,39 +39,48 @@ export class AuthRepository extends Repository<User> {
   ): Promise<any> {
     const { mark } = markAttendanceDto;
     const user = await this.findOne(userId);
-    const attendance = await Attendance.findOne(attendanceId, {
-      select: ['ap_worth'],
-    });
-
-    const result = await Attendance_User.delete({
+    const attendance = await Attendance.findOne(attendanceId);
+    const AUrecord = await Attendance_User.findOne({
       attendanceId,
       userId,
     });
-    if (result.affected <= 0) {
+    if (!AUrecord) {
       let percentage: number = this.computeMarkPercentage(mark);
-      const record = await Attendance_User.create({
-        attendanceId,
-        userId,
-        percentage,
-        mark,
-      }).save();
-      user.ap += attendance.ap_worth * record.percentage;
-      await this.save(user);
-
-      return {
-        message: 'marked',
-        received: attendance.ap_worth,
-        current_ap: user.ap,
-      };
+      try {
+        const record = await Attendance_User.create({
+          attendanceId,
+          userId,
+          percentage,
+          mark,
+        }).save();
+        user.ap += attendance.ap_worth * record.percentage;
+        attendance.ap_total += attendance.ap_worth * record.percentage;
+        await Attendance.save(attendance);
+        await this.save(user);
+        return {
+          message: 'marked',
+          received: attendance.ap_worth * record.percentage,
+          current_ap: user.ap,
+        };
+      } catch (error) {
+        return error.message;
+      }
     } else {
-      user.ap -= attendance.ap_worth;
+      user.ap -= attendance.ap_worth * AUrecord.percentage;
+      attendance.ap_total -= attendance.ap_worth * AUrecord.percentage;
 
-      await this.save(user);
-      return {
-        message: 'unmarked',
-        taken: attendance.ap_worth,
-        current_ap: user.ap,
-      };
+      try {
+        await Attendance.save(attendance);
+        await Attendance_User.delete(AUrecord.id);
+        await this.save(user);
+        return {
+          message: 'unmarked',
+          taken: attendance.ap_worth * AUrecord.percentage,
+          current_ap: user.ap,
+        };
+      } catch (error) {
+        return error.message;
+      }
     }
   }
 
@@ -82,7 +91,7 @@ export class AuthRepository extends Repository<User> {
       case 'LATE':
         return 0.5;
       default:
-        break;
+        return 1;
     }
   }
 }
