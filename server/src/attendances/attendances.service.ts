@@ -2,7 +2,6 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AttendancesRepository } from './attendances.repository';
@@ -12,6 +11,7 @@ import { Activity } from 'src/activities/activities.entity';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
 import { Attendance_Item } from 'src/attendance-item/attendance_item.entity';
+import { Item } from 'src/items/items.entity';
 
 @Injectable()
 export class AttendancesService {
@@ -26,7 +26,7 @@ export class AttendancesService {
   }
   async getOne(id: number): Promise<Attendance> {
     const found = await this.attendancesRepository.findOne(id, {
-      relations: ['participants'],
+      relations: ['participants', 'items'],
     });
     if (!found) throw new NotFoundException('Attendance Not Found');
     return found;
@@ -44,7 +44,7 @@ export class AttendancesService {
   async createAttendance(
     author: string,
     createAttendanceDto: CreateAttendanceDto,
-  ): Promise<Attendance> {
+  ): Promise<any> {
     const {
       activityId,
       remarks,
@@ -54,11 +54,9 @@ export class AttendancesService {
     } = createAttendanceDto;
     const activity = await Activity.findOne(activityId);
     if (!activity) throw new NotFoundException('Activity Not Found');
-
     const { name } = activity;
-
     try {
-      const attendance = await this.attendancesRepository.save({
+      const attendance: Attendance = await this.attendancesRepository.save({
         name,
         remarks,
         result,
@@ -68,13 +66,22 @@ export class AttendancesService {
       });
 
       if (items.length > 0) {
+        //issue = make each item unique, there should be no duplicate items
+        //search how to filter /reduce
+        //make em unique
+
         items.map(async item => {
           const { itemId, qty } = item;
-          await Attendance_Item.create({
-            attendance,
-            itemId,
-            qty,
-          }).save();
+          const itemFound: Item = await Item.findOne(itemId);
+          if (itemFound) {
+            const newQty = itemFound.qty + qty;
+            await Item.update(itemFound.id, { qty: newQty });
+            await Attendance_Item.create({
+              attendance,
+              itemId,
+              qty,
+            }).save();
+          }
         });
       }
       return attendance;
@@ -87,12 +94,41 @@ export class AttendancesService {
     updateAttendanceDto: UpdateAttendanceDto,
   ): Promise<Attendance> {
     try {
+      //issue modify attendance and items for updating items or removing items from the attendance
+      /**
+       * UPDATE ATTENDANCE
+       * 1. Add an item
+       * 2. Add another item
+       * 3. Update an existing item
+       * 4. Delete an existing item
+       */
       const { items, status, result, remarks, ap_worth } = updateAttendanceDto;
       const modifiedAttendanceDto = { status, result, remarks, ap_worth };
 
-      //modify attendance and items for updating items or removing items from the attendance
+      if (items.length > 0) {
+        items.map(async item => {
+          const { itemId, qty } = item;
+          const found = await Attendance_Item.findOne({
+            where: {
+              itemId,
+              attendanceId: id,
+            },
+          });
+          if (found) {
+            await Attendance_Item.update(found.id, { qty });
+          } else {
+            await Attendance_Item.create({
+              itemId,
+              attendanceId: id,
+              qty,
+            }).save();
+          }
+        });
+      }
       await this.attendancesRepository.update(id, modifiedAttendanceDto);
       return await this.getOne(id);
+
+      //issue should update item qty too
     } catch (error) {
       throw new ConflictException(error.message);
     }

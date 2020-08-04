@@ -23,15 +23,15 @@ export class Attendance_Item extends BaseEntity {
   @Column('uuid')
   itemId: number;
 
-  @Column('uuid')
-  attendanceId: number;
-
   @ManyToOne(
     () => Attendance,
     attendance => attendance.items,
     { cascade: true, onDelete: 'CASCADE' },
   )
   public attendance: Attendance;
+
+  @Column('uuid')
+  attendanceId: number;
 
   @Column()
   qty: number;

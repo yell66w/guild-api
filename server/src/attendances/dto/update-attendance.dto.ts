@@ -1,6 +1,5 @@
 import {
   IsNotEmpty,
-  IsUUID,
   IsOptional,
   IsString,
   Length,
@@ -31,6 +30,7 @@ export class UpdateAttendanceDto {
   @IsString()
   status: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => Drop)

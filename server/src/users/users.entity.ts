@@ -46,6 +46,6 @@ export class User {
   )
   public records!: Attendance_User[];
 
-  //you're about to make a donations table user-item
-  //and a redemption table user-item
+  //issue you're about to make a donations table user-item
+  //issue and a redemption table user-item
 }

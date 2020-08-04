@@ -58,11 +58,11 @@ export class Attendance extends BaseEntity {
     () => Attendance_User,
     attendanceUser => attendanceUser.attendance,
   )
-  public participants: Attendance_User;
+  public participants: Attendance_User[];
 
   @OneToMany(
     () => Attendance_Item,
     attendanceItem => attendanceItem.attendance,
   )
-  public items: Attendance_Item;
+  public items: Attendance_Item[];
 }

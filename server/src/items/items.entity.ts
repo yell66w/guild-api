@@ -35,5 +35,5 @@ export class Item extends BaseEntity {
     () => Attendance_Item,
     attendanceItem => attendanceItem.item,
   )
-  public attendances: Attendance_Item;
+  public attendances: Attendance_Item[];
 }
