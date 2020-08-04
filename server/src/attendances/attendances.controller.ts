@@ -9,12 +9,12 @@ import {
   ParseUUIDPipe,
   Delete,
 } from '@nestjs/common';
-import { GetUser } from 'src/users/decorators/get-user.decorator';
-import { User } from 'src/users/users.entity';
+import { GetUser } from '../users/decorators/get-user.decorator';
+import { User } from '../users/users.entity';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { AttendancesService } from './attendances.service';
 import { Attendance } from './attendances.entity';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AttendanceValidationPipe } from './pipe/attendance-validation.pipe';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 

@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { UserStatus, UserRole } from './users.categories';
 import { Transaction } from './transactions.entity';
-import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
+import { Attendance_User } from '../attendance-user/attendance_user.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')

@@ -6,10 +6,10 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { Activity } from 'src/activities/activities.entity';
+import { Activity } from '../activities/activities.entity';
 import { AttendancesStatus } from './attendances.categories';
-import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
-import { Attendance_Item } from 'src/attendance-item/attendance_item.entity';
+import { Attendance_User } from '../attendance-user/attendance_user.entity';
+import { Attendance_Item } from '../attendance-item/attendance_item.entity';
 
 @Entity()
 export class Attendance extends BaseEntity {

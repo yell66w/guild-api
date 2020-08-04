@@ -2,10 +2,10 @@ import { Repository, EntityRepository, getConnection } from 'typeorm';
 import { User } from '../users/users.entity';
 import { AuthSignUpCredentialsDto } from './dto/auth-signup-credentials.dto';
 import * as bcrypt from 'bcrypt';
-import { Transaction } from 'src/users/transactions.entity';
-import { MarkAttendanceDto } from 'src/attendance-user/dto/mark-attendance.dto';
-import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
-import { Attendance } from 'src/attendances/attendances.entity';
+import { Transaction } from '../users/transactions.entity';
+import { MarkAttendanceDto } from '../attendance-user/dto/mark-attendance.dto';
+import { Attendance_User } from '../attendance-user/attendance_user.entity';
+import { Attendance } from '../attendances/attendances.entity';
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
   async signUp(credentials: AuthSignUpCredentialsDto): Promise<void> {

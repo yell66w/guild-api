@@ -6,7 +6,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ItemType } from './items.categories';
-import { Attendance_Item } from 'src/attendance-item/attendance_item.entity';
+import { Attendance_Item } from '../attendance-item/attendance_item.entity';
 
 @Entity()
 export class Item extends BaseEntity {

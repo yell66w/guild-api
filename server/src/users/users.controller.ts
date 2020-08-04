@@ -13,7 +13,7 @@ import { UsersService } from './users.service';
 import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './users.entity';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetUser } from './decorators/get-user.decorator';
 import { UserUpdateValidationPipe } from './pipes/user-update-validation.pipe';
 import { RolesGuard } from './guards/roles.guard';

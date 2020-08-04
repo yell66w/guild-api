@@ -13,7 +13,7 @@ import { ActivityPoint } from './activity-points.entity';
 import { ActivityPointsService } from './activity-points.service';
 import { CreateActivityPointDto } from './dto/create-activity-point.dto';
 import { UpdateActivityPointDto } from './dto/update-activity-point.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('activity-points')
 @UseGuards(new JwtAuthGuard())

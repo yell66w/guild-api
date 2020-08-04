@@ -8,9 +8,9 @@ import { ActivityPointsRepository } from './activity-points.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ActivityPoint } from './activity-points.entity';
 import { CreateActivityPointDto } from './dto/create-activity-point.dto';
-import { Activity } from 'src/activities/activities.entity';
+import { Activity } from '../activities/activities.entity';
 import { UpdateActivityPointDto } from './dto/update-activity-point.dto';
-import { ActivityCategory } from 'src/activities/activities.categories';
+import { ActivityCategory } from '../activities/activities.categories';
 
 @Injectable()
 export class ActivityPointsService {

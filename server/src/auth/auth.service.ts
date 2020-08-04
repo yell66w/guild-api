@@ -8,15 +8,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuthSignUpCredentialsDto } from './dto/auth-signup-credentials.dto';
 import * as bcrypt from 'bcrypt';
-import { AuthSignInCredentialsDto } from '../auth/dto/auth-signin-credentials.dto copy';
+import { AuthSignInCredentialsDto } from './dto/auth-signin-credentials.dto copy';
 import { AuthRepository } from './auth.repository';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/users/users.entity';
+import { User } from '../users/users.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { SendGPSDto } from './dto/send-gps.dto';
-import { MarkAttendanceDto } from 'src/attendance-user/dto/mark-attendance.dto';
-import { Attendance } from 'src/attendances/attendances.entity';
-import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
+import { MarkAttendanceDto } from '../attendance-user/dto/mark-attendance.dto';
 @Injectable()
 export class AuthService {
   constructor(

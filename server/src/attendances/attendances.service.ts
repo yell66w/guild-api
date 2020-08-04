@@ -7,11 +7,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { AttendancesRepository } from './attendances.repository';
 import { Attendance } from './attendances.entity';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
-import { Activity } from 'src/activities/activities.entity';
+import { Activity } from '../activities/activities.entity';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
-import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
-import { Attendance_Item } from 'src/attendance-item/attendance_item.entity';
-import { Item } from 'src/items/items.entity';
+import { Attendance_User } from '../attendance-user/attendance_user.entity';
+import { Attendance_Item } from '../attendance-item/attendance_item.entity';
+import { Item } from '../items/items.entity';
 
 @Injectable()
 export class AttendancesService {

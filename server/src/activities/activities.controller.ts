@@ -14,7 +14,7 @@ import { Activity } from './activities.entity';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { CreateActivityValidationPipe } from './pipes/create-activity-validation.pipe';
 import { UpdateActivityDto } from './dto/update-activity.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('activities')
 @UseGuards(new JwtAuthGuard())

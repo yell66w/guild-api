@@ -11,7 +11,7 @@ import { UsersRepository } from './users.repository';
 import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 import { ManageUserPointsDto } from './dto/manage-user-points.dto copy';
 import { DonateItemDto } from './dto/donate-item.dto';
-import { Item } from 'src/items/items.entity';
+import { Item } from '../items/items.entity';
 import { GetUser } from './decorators/get-user.decorator';
 import { RedeemItemDto } from './dto/redeem-item.dto';
 

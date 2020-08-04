@@ -13,9 +13,9 @@ import { ItemsService } from './items.service';
 import { Item } from './items.entity';
 import { CreateItemDto } from './dto/create-item.dto';
 import { ItemTypeValidationPipe } from './pipe/item-type-validation.pipe';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { GetUser } from 'src/users/decorators/get-user.decorator';
-import { User } from 'src/users/users.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { GetUser } from '../users/decorators/get-user.decorator';
+import { User } from '../users/users.entity';
 import { UpdateItemDto } from './dto/update-item.dto';
 
 @Controller('items')

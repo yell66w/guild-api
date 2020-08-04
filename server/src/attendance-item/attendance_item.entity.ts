@@ -5,8 +5,8 @@ import {
   ManyToOne,
   Column,
 } from 'typeorm';
-import { Attendance } from 'src/attendances/attendances.entity';
-import { Item } from 'src/items/items.entity';
+import { Attendance } from '../attendances/attendances.entity';
+import { Item } from '../items/items.entity';
 
 @Entity()
 export class Attendance_Item extends BaseEntity {

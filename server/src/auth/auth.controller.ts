@@ -10,12 +10,12 @@ import { AuthSignUpCredentialsDto } from './dto/auth-signup-credentials.dto';
 import { AuthService } from './auth.service';
 import { AuthSignInCredentialsDto } from './dto/auth-signin-credentials.dto copy';
 import { GetUser } from '../users/decorators/get-user.decorator';
-import { User } from 'src/users/users.entity';
+import { User } from '../users/users.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { SendGPSDto } from './dto/send-gps.dto';
-import { MarkAttendanceDto } from 'src/attendance-user/dto/mark-attendance.dto';
-import { RecordValidationPipe } from 'src/attendance-user/pipe/record-validation';
+import { MarkAttendanceDto } from '../attendance-user/dto/mark-attendance.dto';
+import { RecordValidationPipe } from '../attendance-user/pipe/record-validation';
 
 @Controller('auth')
 export class AuthController {
