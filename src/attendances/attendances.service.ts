@@ -11,6 +11,7 @@ import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { Activity } from 'src/activities/activities.entity';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
+import { Attendance_Item } from 'src/attendance-item/attendance_item.entity';
 
 @Injectable()
 export class AttendancesService {
@@ -20,7 +21,7 @@ export class AttendancesService {
   ) {}
   async getAttendances(): Promise<Attendance[]> {
     return await this.attendancesRepository.find({
-      relations: ['participants'],
+      relations: ['participants', 'items'],
     });
   }
   async getOne(id: number): Promise<Attendance> {
@@ -44,14 +45,20 @@ export class AttendancesService {
     author: string,
     createAttendanceDto: CreateAttendanceDto,
   ): Promise<Attendance> {
-    const { activityId, remarks, result, ap_worth } = createAttendanceDto;
+    const {
+      activityId,
+      remarks,
+      result,
+      ap_worth,
+      items,
+    } = createAttendanceDto;
     const activity = await Activity.findOne(activityId);
     if (!activity) throw new NotFoundException('Activity Not Found');
 
     const { name } = activity;
 
     try {
-      return await this.attendancesRepository.save({
+      const attendance = await this.attendancesRepository.save({
         name,
         remarks,
         result,
@@ -59,6 +66,18 @@ export class AttendancesService {
         ap_worth,
         activity,
       });
+
+      if (items.length > 0) {
+        items.map(async item => {
+          const { itemId, qty } = item;
+          await Attendance_Item.create({
+            attendance,
+            itemId,
+            qty,
+          }).save();
+        });
+      }
+      return attendance;
     } catch (error) {
       throw new ConflictException(error.message);
     }
@@ -68,7 +87,11 @@ export class AttendancesService {
     updateAttendanceDto: UpdateAttendanceDto,
   ): Promise<Attendance> {
     try {
-      await this.attendancesRepository.update(id, updateAttendanceDto);
+      const { items, status, result, remarks, ap_worth } = updateAttendanceDto;
+      const modifiedAttendanceDto = { status, result, remarks, ap_worth };
+
+      //modify attendance and items for updating items or removing items from the attendance
+      await this.attendancesRepository.update(id, modifiedAttendanceDto);
       return await this.getOne(id);
     } catch (error) {
       throw new ConflictException(error.message);

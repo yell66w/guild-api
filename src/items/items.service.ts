@@ -53,7 +53,6 @@ export class ItemsService {
       );
     }
   }
-
   async deleteItem(id: number): Promise<any> {
     const res = await this.itemsRepository.delete(id);
     if (res.affected <= 0) throw new NotFoundException('Item does not exist');

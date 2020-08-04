@@ -5,7 +5,11 @@ import {
   IsString,
   Length,
   IsNumber,
+  ValidateNested,
 } from 'class-validator';
+
+import { Type } from 'class-transformer';
+import { Drop } from './drop.dto';
 
 export class CreateAttendanceDto {
   @IsNotEmpty()
@@ -24,4 +28,9 @@ export class CreateAttendanceDto {
   @IsNotEmpty()
   @IsString()
   result: string;
+
+  @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => Drop)
+  items: Drop[];
 }

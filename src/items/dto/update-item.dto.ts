@@ -23,12 +23,6 @@ export class UpdateItemDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  ap_worth: number;
-
-  @IsOptional()
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
   gp_price: number;
 
   @IsOptional()

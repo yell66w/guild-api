@@ -1,5 +1,12 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+} from 'typeorm';
 import { ItemType } from './items.categories';
+import { Attendance_Item } from 'src/attendance-item/attendance_item.entity';
 
 @Entity()
 export class Item extends BaseEntity {
@@ -8,9 +15,6 @@ export class Item extends BaseEntity {
 
   @Column({ unique: true })
   name: string;
-
-  @Column('double precision', { default: () => 0 })
-  ap_worth: number;
 
   @Column('double precision', { default: () => 0 })
   gp_price: number;
@@ -26,4 +30,10 @@ export class Item extends BaseEntity {
 
   @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })
   createdAt: Date;
+
+  @OneToMany(
+    () => Attendance_Item,
+    attendanceItem => attendanceItem.item,
+  )
+  public attendances: Attendance_Item;
 }

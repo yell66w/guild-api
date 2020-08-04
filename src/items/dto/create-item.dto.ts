@@ -12,11 +12,6 @@ export class CreateItemDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  ap_worth: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(0)
   gp_price: number;
 
   @IsNotEmpty()

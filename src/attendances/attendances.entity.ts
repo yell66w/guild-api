@@ -9,6 +9,7 @@ import {
 import { Activity } from 'src/activities/activities.entity';
 import { AttendancesStatus } from './attendances.categories';
 import { Attendance_User } from 'src/attendance-user/attendance_user.entity';
+import { Attendance_Item } from 'src/attendance-item/attendance_item.entity';
 
 @Entity()
 export class Attendance extends BaseEntity {
@@ -58,4 +59,10 @@ export class Attendance extends BaseEntity {
     attendanceUser => attendanceUser.attendance,
   )
   public participants: Attendance_User;
+
+  @OneToMany(
+    () => Attendance_Item,
+    attendanceItem => attendanceItem.attendance,
+  )
+  public items: Attendance_Item;
 }
