@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsUUID, IsNumber, IsInt, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsUUID,
+  IsNumber,
+  IsInt,
+  Min,
+  IsPositive,
+} from 'class-validator';
 
 export class AddDropDto {
   @IsNotEmpty()
@@ -13,5 +20,6 @@ export class AddDropDto {
   @IsNumber()
   @IsInt()
   @Min(1)
+  @IsPositive()
   qty: number;
 }

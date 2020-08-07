@@ -13,6 +13,7 @@ import { Attendance_Item_Service } from './attendances_item.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Attendance_Item } from './attendance_item.entity';
 import { AddDropDto } from './dto/addDrop.dto';
+import { UpdateDropDto } from './dto/updateDrop';
 
 @UseGuards(new JwtAuthGuard())
 @Controller('attendances/drops')
@@ -29,9 +30,9 @@ export class Attendance_Item_Controller {
   @Put(':id')
   updateDropFromAttendance(
     @Param('id', ParseUUIDPipe) id: number,
-    @Body('qty', ParseIntPipe) qty: number,
+    @Body() updateDropDto: UpdateDropDto,
   ): Promise<Attendance_Item> {
-    return this.attendance_item_service.updateDrop(id, qty);
+    return this.attendance_item_service.updateDrop(id, updateDropDto);
   }
 
   @Delete(':id')

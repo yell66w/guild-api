@@ -8,6 +8,7 @@ import { Attendance_Item_Repository } from './attendance_item.repository';
 import { Attendance_Item } from './attendance_item.entity';
 import { Item } from 'src/items/items.entity';
 import { AddDropDto } from './dto/addDrop.dto';
+import { UpdateDropDto } from './dto/updateDrop';
 
 @Injectable()
 export class Attendance_Item_Service {
@@ -25,6 +26,9 @@ export class Attendance_Item_Service {
         attendanceId,
       });
       if (!alreadyExists) {
+        const item = await Item.findOne(itemId);
+        item.qty += qty;
+        await Item.update(itemId, item);
         return await this.attendanceItemRepository.save({
           attendanceId,
           itemId,
@@ -37,7 +41,16 @@ export class Attendance_Item_Service {
       throw new NotFoundException('Drop item does not exist.');
     }
   }
-  async updateDrop(id: number, qty: number): Promise<Attendance_Item> {
+  async updateDrop(
+    id: number,
+    updateDropDto: UpdateDropDto,
+  ): Promise<Attendance_Item> {
+    const { qty } = updateDropDto;
+    const attendance_item = await this.attendanceItemRepository.findOne(id);
+    const item = await Item.findOne(attendance_item.itemId);
+    item.qty -= attendance_item.qty;
+    item.qty += qty;
+    await Item.update(item.id, item);
     const res = await this.attendanceItemRepository.update(id, { qty });
     if (res.affected > 0) {
       return await this.attendanceItemRepository.findOne(id);
@@ -47,6 +60,10 @@ export class Attendance_Item_Service {
   }
 
   async deleteDrop(id: number): Promise<boolean> {
+    const attendance_item = await this.attendanceItemRepository.findOne(id);
+    const item = await Item.findOne(attendance_item.itemId);
+    item.qty -= attendance_item.qty;
+    await Item.update(item.id, item);
     const res = await this.attendanceItemRepository.delete(id);
     if (res.affected > 0) {
       return true;
