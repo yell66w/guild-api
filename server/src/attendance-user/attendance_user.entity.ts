@@ -7,7 +7,6 @@ import {
 } from 'typeorm';
 import { User } from '../users/users.entity';
 import { Attendance } from '../attendances/attendances.entity';
-import { Mark } from './marks.categories';
 
 @Entity()
 export class Attendance_User extends BaseEntity {

@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AttendancesRepository } from './attendances.repository';
@@ -10,8 +11,6 @@ import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { Activity } from '../activities/activities.entity';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { Attendance_User } from '../attendance-user/attendance_user.entity';
-import { Attendance_Item } from '../attendance-item/attendance_item.entity';
-import { Item } from '../items/items.entity';
 
 @Injectable()
 export class AttendancesService {
@@ -45,13 +44,7 @@ export class AttendancesService {
     author: string,
     createAttendanceDto: CreateAttendanceDto,
   ): Promise<any> {
-    const {
-      activityId,
-      remarks,
-      result,
-      ap_worth,
-      items,
-    } = createAttendanceDto;
+    const { activityId, remarks, result, ap_worth } = createAttendanceDto;
     const activity = await Activity.findOne(activityId);
     if (!activity) throw new NotFoundException('Activity Not Found');
     const { name } = activity;
@@ -65,74 +58,27 @@ export class AttendancesService {
         activity,
       });
 
-      if (items.length > 0) {
-        //issue = make each item unique, there should be no duplicate items
-        //search how to filter /reduce
-        //make em unique
-
-        items.map(async item => {
-          const { itemId, qty } = item;
-          const itemFound: Item = await Item.findOne(itemId);
-          if (itemFound) {
-            const newQty = itemFound.qty + qty;
-            await Item.update(itemFound.id, { qty: newQty });
-            await Attendance_Item.create({
-              attendance,
-              itemId,
-              qty,
-            }).save();
-          }
-        });
-      }
       return attendance;
     } catch (error) {
       throw new ConflictException(error.message);
     }
   }
+
   async updateAttendance(
-    id: number,
+    attendanceId: number,
     updateAttendanceDto: UpdateAttendanceDto,
   ): Promise<Attendance> {
     try {
-      //issue modify attendance and items for updating items or removing items from the attendance
-      /**
-       * UPDATE ATTENDANCE
-       * 1. Add an item
-       * 2. Add another item
-       * 3. Update an existing item
-       * 4. Delete an existing item
-       */
-      const { items, status, result, remarks, ap_worth } = updateAttendanceDto;
-      const modifiedAttendanceDto = { status, result, remarks, ap_worth };
-
-      if (items.length > 0) {
-        items.map(async item => {
-          const { itemId, qty } = item;
-          const found = await Attendance_Item.findOne({
-            where: {
-              itemId,
-              attendanceId: id,
-            },
-          });
-          if (found) {
-            await Attendance_Item.update(found.id, { qty });
-          } else {
-            await Attendance_Item.create({
-              itemId,
-              attendanceId: id,
-              qty,
-            }).save();
-          }
-        });
-      }
-      await this.attendancesRepository.update(id, modifiedAttendanceDto);
-      return await this.getOne(id);
-
-      //issue should update item qty too
+      await this.attendancesRepository.update(
+        attendanceId,
+        updateAttendanceDto,
+      );
+      return await this.getOne(attendanceId);
     } catch (error) {
-      throw new ConflictException(error.message);
+      throw new BadRequestException('Field has no values');
     }
   }
+
   async deleteAttendance(id: number): Promise<any> {
     const result = await this.attendancesRepository.delete(id);
     if (result.affected <= 0) {

@@ -1,6 +1,10 @@
 import { IsNotEmpty, IsUUID, IsNumber, IsInt, Min } from 'class-validator';
 
-export class Drop {
+export class AddDropDto {
+  @IsNotEmpty()
+  @IsUUID()
+  attendanceId: number;
+
   @IsNotEmpty()
   @IsUUID()
   itemId: number;
