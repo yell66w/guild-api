@@ -4,6 +4,7 @@ import {
   IsString,
   Length,
   IsNumber,
+  IsUUID,
 } from 'class-validator';
 
 export class UpdateAttendanceDto {
@@ -14,11 +15,6 @@ export class UpdateAttendanceDto {
 
   @IsOptional()
   @IsNotEmpty()
-  @IsNumber()
-  ap_worth: number;
-
-  @IsOptional()
-  @IsNotEmpty()
   @IsString()
   result: string;
 
@@ -26,4 +22,9 @@ export class UpdateAttendanceDto {
   @IsNotEmpty()
   @IsString()
   status: string;
+
+  @IsOptional()
+  @IsNotEmpty()
+  @IsUUID()
+  activityPointId: number;
 }

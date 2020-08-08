@@ -45,6 +45,10 @@ export class AttendancesController {
       createAttendanceDto,
     );
   }
+  @Put(':id/default-pay')
+  defaultPay(@Param('id', ParseUUIDPipe) id: number): Promise<any> {
+    return this.attendancesService.defaultPay(id);
+  }
 
   @Put(':id')
   updateAttendance(

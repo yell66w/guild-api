@@ -1,5 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { Activity } from '../activities/activities.entity';
+import { Attendance } from 'src/attendances/attendances.entity';
 @Entity()
 export class ActivityPoint {
   @PrimaryGeneratedColumn('uuid')
@@ -20,4 +27,11 @@ export class ActivityPoint {
     { cascade: true, onDelete: 'CASCADE' },
   )
   activity: Activity;
+
+  @OneToMany(
+    () => Attendance,
+    attendance => attendance.activityPoint,
+    { cascade: true, onDelete: 'CASCADE' },
+  )
+  attendances: Attendance[];
 }

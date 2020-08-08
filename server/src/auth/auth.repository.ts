@@ -7,7 +7,8 @@ import { MarkAttendanceDto } from '../attendance-user/dto/mark-attendance.dto';
 import { Attendance_User } from '../attendance-user/attendance_user.entity';
 import { Attendance } from '../attendances/attendances.entity';
 import { AttendancesStatus } from 'src/attendances/attendances.categories';
-import { UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { ActivityCategory } from 'src/activities/activities.categories';
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
   async signUp(credentials: AuthSignUpCredentialsDto): Promise<void> {
@@ -17,7 +18,7 @@ export class AuthRepository extends Repository<User> {
     credentials.password = await bcrypt.hash(password, credentials.salt);
     await this.save(credentials);
   }
-
+  /** Send GPS from auth to another user */
   async sendGPS(user: User, receiver: User, amount: number) {
     receiver.gp += amount;
     user.gp -= amount;
@@ -33,67 +34,110 @@ export class AuthRepository extends Repository<User> {
       message: `Successfully sent ${amount} GPS to ${receiver.IGN}. Remaining balance:${user.gp}`,
     };
   }
-
   async markAttendance(
     userId: number,
     attendanceId: number,
     markAttendanceDto: MarkAttendanceDto,
   ): Promise<any> {
     const { mark } = markAttendanceDto;
-    const attendance = await Attendance.findOne(attendanceId);
+
+    /** Find attendance */
+    const attendance = await Attendance.findOne(attendanceId, {
+      relations: ['activityPoint', 'guild'],
+    });
+
+    /** Check if the attendance is still open */
     if (attendance.status !== AttendancesStatus.OPEN) {
       throw new UnauthorizedException('Too late! Attendance is already closed');
     }
 
+    /** Get authenticated user */
     const user = await this.findOne(userId);
+
+    /** Check if Attendance & User relationship already exists */
     const AUrecord = await Attendance_User.findOne({
       attendanceId,
       userId,
     });
+    /** Proceed here if there is no relationship (mark) */
     if (!AUrecord) {
+      /** Compute Percentage based on Mark (Ontime,Late,Extra) */
       let percentage: number = this.computeMarkPercentage(mark);
       try {
+        /** Save Attendance & User relationship */
         const record = await Attendance_User.create({
           attendanceId,
           userId,
           percentage,
           mark,
         }).save();
-        const APxPercentage: number = attendance.ap_worth * record.percentage;
 
-        user.ap += APxPercentage;
-        attendance.ap_total += APxPercentage;
+        /** Computes overall contribution (ActivityPoint*Percentage) */
+        const overallContribution: number =
+          attendance.activityPoint.ap * record.percentage;
 
+        /** Add overall contribution to attendance's total ap */
+        attendance.ap_total += overallContribution;
+
+        /** (PAYDAY ONLY) */
+        if (attendance.category === ActivityCategory.PAYDAY) {
+          /** Add overall contribution to player ap */
+          user.ap += overallContribution;
+          /** Add overall contribution to guild's weekly ap  */
+          attendance.guild.weeklyAP += overallContribution;
+        }
+
+        /** Save Attendance & User*/
         await Attendance.save(attendance);
         await this.save(user);
+
+        /** Return Object */
         return {
           message: 'marked',
-          received: APxPercentage,
+          received: overallContribution,
           current_ap: user.ap,
         };
       } catch (error) {
         return error.message;
       }
     } else {
-      const APxPercentage: number = attendance.ap_worth * AUrecord.percentage;
-      user.ap -= APxPercentage;
-      attendance.ap_total -= APxPercentage;
+      /** Proceed here if there is already a relationship (unmark) */
+
+      /** Delete Attendance & User relationship */
+      await Attendance_User.delete(AUrecord.id);
+
+      /** Compute overall contribution */
+      const overallContribution: number =
+        attendance.activityPoint.ap * AUrecord.percentage;
+
+      /** Remove overall contribution from attendance's total ap */
+      attendance.ap_total -= overallContribution;
+
+      /** (PAYDAY ONLY) */
+      if (attendance.category === ActivityCategory.PAYDAY) {
+        /** Remove overall contribution from guild's weekly ap */
+        attendance.guild.weeklyAP -= overallContribution;
+        /** Remove overall contribution from player's ap */
+        user.ap -= overallContribution;
+      }
 
       try {
+        /** Save Attendance & User */
         await Attendance.save(attendance);
-        await Attendance_User.delete(AUrecord.id);
         await this.save(user);
+
+        /** Return object */
         return {
           message: 'unmarked',
-          taken: attendance.ap_worth * AUrecord.percentage,
+          taken: overallContribution,
           current_ap: user.ap,
         };
       } catch (error) {
-        return error.message;
+        throw new BadRequestException(error.message);
       }
     }
   }
-
+  /** Returns Percentage based on Mark  */
   private computeMarkPercentage(mark: string) {
     switch (mark) {
       case 'ONTIME':

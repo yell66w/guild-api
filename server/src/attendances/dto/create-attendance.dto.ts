@@ -18,10 +18,10 @@ export class CreateAttendanceDto {
   remarks: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  ap_worth: number;
-
-  @IsNotEmpty()
   @IsString()
   result: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  activityPointId: number;
 }

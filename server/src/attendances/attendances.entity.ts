@@ -5,12 +5,15 @@ import {
   BaseEntity,
   ManyToOne,
   OneToMany,
+  OneToOne,
 } from 'typeorm';
 import { Activity } from '../activities/activities.entity';
 import { AttendancesStatus } from './attendances.categories';
 import { Attendance_User } from '../attendance-user/attendance_user.entity';
 import { Attendance_Item } from '../attendance-item/attendance_item.entity';
 import { Guild } from 'src/guild/guild.entity';
+import { ActivityCategory } from 'src/activities/activities.categories';
+import { ActivityPoint } from 'src/activity-points/activity-points.entity';
 
 @Entity()
 export class Attendance extends BaseEntity {
@@ -22,9 +25,6 @@ export class Attendance extends BaseEntity {
 
   @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })
   createdAt: Date;
-
-  @Column('double precision', { default: () => 0 })
-  ap_worth: number;
 
   @Column('double precision', { default: () => 0 })
   ap_total: number;
@@ -73,4 +73,20 @@ export class Attendance extends BaseEntity {
     { cascade: true, onDelete: 'CASCADE' },
   )
   guild: Guild;
+
+  @Column({
+    type: 'enum',
+    enum: ActivityCategory,
+    default: ActivityCategory.DEFAULT,
+  })
+  category: string;
+
+  @ManyToOne(
+    () => ActivityPoint,
+    activityPoint => activityPoint.attendances,
+  )
+  activityPoint: ActivityPoint;
+
+  @Column({ nullable: true })
+  activityPointId: number;
 }

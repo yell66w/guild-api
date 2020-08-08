@@ -9,6 +9,8 @@ import { AttendancesStatus } from 'src/attendances/attendances.categories';
 import { Not, MoreThan } from 'typeorm';
 import { User } from 'src/users/users.entity';
 import { PaydayDto } from './dto/payday.dto';
+import { ActivityCategory } from 'src/activities/activities.categories';
+import { DefaultPayDto } from '../attendances/dto/default-pay.dto';
 
 @Injectable()
 export class GuildService {
@@ -21,7 +23,6 @@ export class GuildService {
       relations: ['attendances'],
     });
   }
-
   async create(data: CreateGuildDto): Promise<Guild> {
     try {
       return await this.guildRepository.save(data);
@@ -65,17 +66,22 @@ export class GuildService {
 
     /** Update all attendance and set everything to paid */
     await Attendance.update(
-      { status: Not(AttendancesStatus.PAID) },
+      {
+        status: Not(AttendancesStatus.PAID),
+        category: ActivityCategory.PAYDAY,
+      },
       { status: AttendancesStatus.PAID },
     );
 
     return await User.find();
   }
-
   async getWeeklyGP(): Promise<number> {
     const attendances = await Attendance.find({
       select: ['gp_total'],
-      where: { status: Not(AttendancesStatus.PAID) },
+      where: {
+        status: Not(AttendancesStatus.PAID),
+        category: ActivityCategory.PAYDAY,
+      },
     });
     let weeklyGP = 0;
     attendances.map(attendance => {
@@ -83,11 +89,13 @@ export class GuildService {
     });
     return weeklyGP;
   }
-
   async getWeeklyAP(): Promise<number> {
     const attendances = await Attendance.find({
       select: ['ap_total'],
-      where: { status: Not(AttendancesStatus.PAID) },
+      where: {
+        status: Not(AttendancesStatus.PAID),
+        category: ActivityCategory.PAYDAY,
+      },
     });
     let weeklyAP = 0;
     attendances.map(attendance => {

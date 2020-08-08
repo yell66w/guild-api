@@ -10,6 +10,8 @@ import { Item } from 'src/items/items.entity';
 import { AddDropDto } from './dto/addDrop.dto';
 import { UpdateDropDto } from './dto/updateDrop';
 import { Attendance } from 'src/attendances/attendances.entity';
+import { ActivityCategory } from 'src/activities/activities.categories';
+import { AttendancesStatus } from 'src/attendances/attendances.categories';
 
 @Injectable()
 export class Attendance_Item_Service {
@@ -26,6 +28,8 @@ export class Attendance_Item_Service {
     const attendance = await Attendance.findOne(attendanceId, {
       relations: ['guild'],
     });
+    if (attendance.status === AttendancesStatus.PAID)
+      throw new BadRequestException('Attendance is already PAID!');
 
     /** Only execute if item and attendance is legit */
     if (item && attendance) {
@@ -47,7 +51,8 @@ export class Attendance_Item_Service {
         attendance.gp_total += totalItemPrice;
 
         /** Modify GUILD weekly GP */
-        attendance.guild.weeklyGP += totalItemPrice;
+        if (attendance.category === ActivityCategory.PAYDAY)
+          attendance.guild.weeklyGP += totalItemPrice;
 
         /** Save Item, Attendance, and their Relationship */
         await Item.save(item);
@@ -79,6 +84,8 @@ export class Attendance_Item_Service {
         attendance_item.attendanceId,
         { relations: ['guild'] },
       );
+      if (attendance.status === AttendancesStatus.PAID)
+        throw new BadRequestException('Attendance is already PAID!');
       const item = await Item.findOne(attendance_item.itemId);
 
       /** Compute Total Drop Item Price */
@@ -95,8 +102,10 @@ export class Attendance_Item_Service {
       attendance.gp_total += newTotalItemPrice;
 
       /** Modify Guild's Weekly GP */
-      attendance.guild.weeklyGP -= oldTotalItemPrice;
-      attendance.guild.weeklyGP += newTotalItemPrice;
+      if (attendance.category === ActivityCategory.PAYDAY) {
+        attendance.guild.weeklyGP -= oldTotalItemPrice;
+        attendance.guild.weeklyGP += newTotalItemPrice;
+      }
 
       /** Save Item, Attendance and their relationship */
       await Attendance.save(attendance);
@@ -130,6 +139,8 @@ export class Attendance_Item_Service {
           relations: ['guild'],
         },
       );
+      if (attendance.status === AttendancesStatus.PAID)
+        throw new BadRequestException('Attendance is already PAID!');
 
       const totalItemPrice = attendance_item.qty * attendance_item.gp_price;
 
@@ -140,7 +151,8 @@ export class Attendance_Item_Service {
       attendance.gp_total -= totalItemPrice;
 
       /** Modify GUILD Weekly GP */
-      attendance.guild.weeklyGP -= totalItemPrice;
+      if (attendance.category === ActivityCategory.PAYDAY)
+        attendance.guild.weeklyGP -= totalItemPrice;
 
       /** Save Item and Attendance */
       await Item.save(item);

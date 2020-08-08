@@ -3,6 +3,7 @@ import {
   NotFoundException,
   MethodNotAllowedException,
   NotAcceptableException,
+  BadRequestException,
 } from '@nestjs/common';
 import { ActivityPointsRepository } from './activity-points.repository';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -34,29 +35,37 @@ export class ActivityPointsService {
   ): Promise<ActivityPoint> {
     const { activityId } = createActivityPointDto;
     const activity = await Activity.findOne(activityId);
-    if (activity.category === ActivityCategory.PAYDAY) {
-      delete createActivityPointDto.activityId;
-      const activityPoint = await this.activityPointsRepository.save({
-        ...createActivityPointDto,
-        activity,
-      });
-      return await this.activityPointsRepository.save(activityPoint);
+    if (activity) {
+      if (activity.category === ActivityCategory.PAYDAY) {
+        delete createActivityPointDto.activityId;
+        const activityPoint = await this.activityPointsRepository.save({
+          ...createActivityPointDto,
+          activity,
+        });
+        return await this.activityPointsRepository.save(activityPoint);
+      } else {
+        throw new NotAcceptableException('Activity must be of type PAYDAY');
+      }
     } else {
-      throw new NotAcceptableException('Activity must be of type PAYDAY');
+      throw new NotFoundException('Activity does not exist');
     }
   }
   async updateActivityPoint(
     id: number,
     updateActivityPointDto: UpdateActivityPointDto,
   ): Promise<ActivityPoint> {
-    try {
-      await this.activityPointsRepository.update(id, updateActivityPointDto);
-      return await this.getOne(id);
-    } catch (error) {
-      throw new MethodNotAllowedException(
-        'Cannot update activity point without values',
-      );
+    const activityPoint = await this.activityPointsRepository.findOne(id);
+    if (!activityPoint)
+      throw new NotFoundException('Activity Point does not exist!');
+
+    if (updateActivityPointDto.ap) {
     }
+
+    const updatedActivityPoint = {
+      ...activityPoint,
+      ...updateActivityPointDto,
+    };
+    return await this.activityPointsRepository.save(updatedActivityPoint);
   }
   async deleteActivityPoint(id: number): Promise<void> {
     const result = await this.activityPointsRepository.delete(id);

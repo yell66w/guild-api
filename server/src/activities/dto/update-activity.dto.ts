@@ -1,4 +1,5 @@
 import { IsNotEmpty, Length, IsString, IsOptional } from 'class-validator';
+import { ActivityCategory } from '../activities.categories';
 
 export class UpdateActivityDto {
   @IsOptional()
@@ -12,5 +13,5 @@ export class UpdateActivityDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  category: string;
+  category: ActivityCategory;
 }
