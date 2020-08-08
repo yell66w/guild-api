@@ -33,6 +33,9 @@ export class Attendance_Item extends BaseEntity {
   @Column('uuid')
   attendanceId: number;
 
-  @Column()
+  @Column('int')
   qty: number;
+
+  @Column('double precision', { default: 0 })
+  gp_price: number;
 }

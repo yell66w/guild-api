@@ -10,6 +10,7 @@ import { Activity } from '../activities/activities.entity';
 import { AttendancesStatus } from './attendances.categories';
 import { Attendance_User } from '../attendance-user/attendance_user.entity';
 import { Attendance_Item } from '../attendance-item/attendance_item.entity';
+import { Guild } from 'src/guild/guild.entity';
 
 @Entity()
 export class Attendance extends BaseEntity {
@@ -65,4 +66,11 @@ export class Attendance extends BaseEntity {
     attendanceItem => attendanceItem.attendance,
   )
   public items: Attendance_Item[];
+
+  @ManyToOne(
+    () => Guild,
+    guild => guild.attendances,
+    { cascade: true, onDelete: 'CASCADE' },
+  )
+  guild: Guild;
 }

@@ -8,6 +8,7 @@ import { ActivityPointsHttpModule } from './activity-points/activities-http.modu
 import { AttendancesHttpModule } from './attendances/attendances-http.module';
 import { ItemsHttpModule } from './items/items-http.module';
 import { AttendanceItemHttpModule } from './attendance-item/attendance_item-http.module';
+import { GuildHttpModule } from './guild/guild-http.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AttendanceItemHttpModule } from './attendance-item/attendance_item-http
     AttendancesHttpModule,
     ItemsHttpModule,
     AttendanceItemHttpModule,
+    GuildHttpModule,
   ],
 })
 export class AppModule {

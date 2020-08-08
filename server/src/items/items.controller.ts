@@ -8,6 +8,7 @@ import {
   Delete,
   ParseUUIDPipe,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { Item } from './items.entity';
@@ -17,15 +18,19 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { GetUser } from '../users/decorators/get-user.decorator';
 import { User } from '../users/users.entity';
 import { UpdateItemDto } from './dto/update-item.dto';
+import { GetItemsFilterDto } from './dto/get-items-filter.dto';
 
 @Controller('items')
 @UseGuards(new JwtAuthGuard())
 export class ItemsController {
   constructor(private itemsService: ItemsService) {}
   @Get()
-  getItems(): Promise<Item[]> {
-    return this.itemsService.getItems();
+  getItems(
+    @Query(ItemTypeValidationPipe) filterDto: GetItemsFilterDto,
+  ): Promise<Item[]> {
+    return this.itemsService.getItems(filterDto);
   }
+
   @Get(':id')
   getOne(@Param('id', ParseUUIDPipe) id: number): Promise<Item> {
     return this.itemsService.getOne(id);

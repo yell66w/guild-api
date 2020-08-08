@@ -6,6 +6,8 @@ import { Transaction } from '../users/transactions.entity';
 import { MarkAttendanceDto } from '../attendance-user/dto/mark-attendance.dto';
 import { Attendance_User } from '../attendance-user/attendance_user.entity';
 import { Attendance } from '../attendances/attendances.entity';
+import { AttendancesStatus } from 'src/attendances/attendances.categories';
+import { UnauthorizedException } from '@nestjs/common';
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
   async signUp(credentials: AuthSignUpCredentialsDto): Promise<void> {
@@ -38,8 +40,12 @@ export class AuthRepository extends Repository<User> {
     markAttendanceDto: MarkAttendanceDto,
   ): Promise<any> {
     const { mark } = markAttendanceDto;
-    const user = await this.findOne(userId);
     const attendance = await Attendance.findOne(attendanceId);
+    if (attendance.status !== AttendancesStatus.OPEN) {
+      throw new UnauthorizedException('Too late! Attendance is already closed');
+    }
+
+    const user = await this.findOne(userId);
     const AUrecord = await Attendance_User.findOne({
       attendanceId,
       userId,
@@ -53,21 +59,25 @@ export class AuthRepository extends Repository<User> {
           percentage,
           mark,
         }).save();
-        user.ap += attendance.ap_worth * record.percentage;
-        attendance.ap_total += attendance.ap_worth * record.percentage;
+        const APxPercentage: number = attendance.ap_worth * record.percentage;
+
+        user.ap += APxPercentage;
+        attendance.ap_total += APxPercentage;
+
         await Attendance.save(attendance);
         await this.save(user);
         return {
           message: 'marked',
-          received: attendance.ap_worth * record.percentage,
+          received: APxPercentage,
           current_ap: user.ap,
         };
       } catch (error) {
         return error.message;
       }
     } else {
-      user.ap -= attendance.ap_worth * AUrecord.percentage;
-      attendance.ap_total -= attendance.ap_worth * AUrecord.percentage;
+      const APxPercentage: number = attendance.ap_worth * AUrecord.percentage;
+      user.ap -= APxPercentage;
+      attendance.ap_total -= APxPercentage;
 
       try {
         await Attendance.save(attendance);

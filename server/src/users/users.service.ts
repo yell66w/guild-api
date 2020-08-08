@@ -12,7 +12,6 @@ import { GetUsersFilterDto } from './dto/get-users-filter.dto';
 import { ManageUserPointsDto } from './dto/manage-user-points.dto copy';
 import { DonateItemDto } from './dto/donate-item.dto';
 import { Item } from '../items/items.entity';
-import { GetUser } from './decorators/get-user.decorator';
 import { RedeemItemDto } from './dto/redeem-item.dto';
 
 @Injectable()
@@ -32,7 +31,19 @@ export class UsersService {
     return user;
   }
   async getOne(id: number): Promise<User> {
-    const found = await this.usersRepository.findOne(id);
+    const found = await this.usersRepository.findOne(id, {
+      select: [
+        'id',
+        'IGN',
+        'username',
+        'ap',
+        'gp',
+        'role',
+        'status',
+        'createdAt',
+      ],
+      relations: ['records'],
+    });
     if (!found) throw new NotFoundException('User not found');
     return found;
   }
@@ -71,6 +82,7 @@ export class UsersService {
 
   async donate(author: string, donateItemDto: DonateItemDto): Promise<any> {
     const { userId, itemId, qty, discount } = donateItemDto;
+
     const item = await Item.findOne(itemId);
     const user = await this.usersRepository.findOne(userId);
     if (item && user) {
@@ -88,6 +100,7 @@ export class UsersService {
 
   async redeem(author: string, redeemItemDto: RedeemItemDto): Promise<any> {
     const { userId, itemId, qty, discount } = redeemItemDto;
+
     const item = await Item.findOne(itemId);
     const user = await this.usersRepository.findOne(userId);
 

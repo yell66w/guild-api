@@ -11,6 +11,7 @@ import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { Activity } from '../activities/activities.entity';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { Attendance_User } from '../attendance-user/attendance_user.entity';
+import { Guild } from 'src/guild/guild.entity';
 
 @Injectable()
 export class AttendancesService {
@@ -49,6 +50,7 @@ export class AttendancesService {
     if (!activity) throw new NotFoundException('Activity Not Found');
     const { name } = activity;
     try {
+      const guild = await Guild.findOne({ name: 'Bank' }); //issue - ??
       const attendance: Attendance = await this.attendancesRepository.save({
         name,
         remarks,
@@ -56,6 +58,7 @@ export class AttendancesService {
         author,
         ap_worth,
         activity,
+        guild,
       });
 
       return attendance;

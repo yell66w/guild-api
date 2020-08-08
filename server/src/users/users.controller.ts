@@ -31,7 +31,9 @@ export class UsersController {
   @Get()
   @Roles('ADMIN', 'OFFICER')
   @UseGuards(RolesGuard)
-  getUsers(@Query() filterDto: GetUsersFilterDto): Promise<User[]> {
+  getUsers(
+    @Query(UserUpdateValidationPipe) filterDto: GetUsersFilterDto,
+  ): Promise<User[]> {
     return this.usersService.getUsers(filterDto);
   }
 
