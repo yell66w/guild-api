@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   MethodNotAllowedException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './users.entity';
@@ -91,6 +92,9 @@ export class UsersService {
       user.gp += (item.gp_price - item.gp_price * (discount / 100)) * qty;
       await Item.save(item);
       await this.usersRepository.save(user);
+      Logger.log(
+        `${user.IGN} donated x${qty} ${item.name} - verified by ${author} `,
+      );
       return {
         message: 'Succesfully donated an item',
       };
@@ -115,6 +119,10 @@ export class UsersService {
       user.gp -= (item.gp_price - item.gp_price * (discount / 100)) * qty;
       await Item.save(item);
       await this.usersRepository.save(user);
+
+      Logger.log(
+        `${user.IGN} redeemed x${qty} ${item.name} - verified by ${author} `,
+      );
       return {
         message: 'Succesfully redeemed an item',
       };
