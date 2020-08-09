@@ -4,24 +4,23 @@ import {
   IsOptional,
   IsString,
   Length,
-  IsNumber,
 } from 'class-validator';
 
 export class CreateAttendanceDto {
   @IsNotEmpty()
   @IsUUID()
-  activityId: number;
+  activityId!: number;
 
   @IsOptional()
   @IsString()
   @Length(3, 30)
-  remarks: string;
+  remarks?: string;
 
   @IsNotEmpty()
   @IsString()
-  result: string;
+  result!: string;
 
   @IsNotEmpty()
   @IsUUID()
-  activityPointId: number;
+  activityPointId!: number;
 }

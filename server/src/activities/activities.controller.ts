@@ -26,7 +26,9 @@ export class ActivitiesController {
     return this.activitiesService.getActivities();
   }
   @Get(':id')
-  getOne(@Param('id', ParseUUIDPipe) id: number): Promise<Activity> {
+  getOne(
+    @Param('id', ParseUUIDPipe) id: number,
+  ): Promise<Activity | undefined> {
     return this.activitiesService.getOne(id);
   }
 
@@ -41,7 +43,7 @@ export class ActivitiesController {
   updateActivity(
     @Param('id', ParseUUIDPipe) id: number,
     @Body(CreateActivityValidationPipe) updateActivityDto: UpdateActivityDto,
-  ): Promise<Activity> {
+  ): Promise<Activity | undefined> {
     return this.activitiesService.updateActivity(id, updateActivityDto);
   }
   @Delete(':id')

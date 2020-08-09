@@ -1,13 +1,13 @@
-import { IsOptional, IsNotEmpty } from 'class-validator';
+import { IsOptional } from 'class-validator';
 import { UserRole, UserStatus } from '../users.categories';
 
 export class GetUsersFilterDto {
   @IsOptional()
-  search: string;
+  search?: string;
 
   @IsOptional()
-  role: UserRole;
+  role?: UserRole;
 
   @IsOptional()
-  status: UserStatus;
+  status?: UserStatus;
 }

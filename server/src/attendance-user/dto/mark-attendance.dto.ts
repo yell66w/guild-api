@@ -1,7 +1,7 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class MarkAttendanceDto {
   @IsNotEmpty()
   @IsString()
-  mark: string;
+  mark!: string;
 }

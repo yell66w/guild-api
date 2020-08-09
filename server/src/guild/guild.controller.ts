@@ -10,7 +10,6 @@ import {
 import { GuildService } from './guild.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { ApprovedGuard } from 'src/users/guards/approved.guard';
-import { Attendance } from 'src/attendances/attendances.entity';
 import { Guild } from './guild.entity';
 import { CreateGuildDto } from './dto/create-guild.dto';
 import { PaydayDto } from './dto/payday.dto';

@@ -5,5 +5,5 @@ export class DefaultPayDto {
   @Min(0)
   @Max(100)
   @IsPositive()
-  taxRate: number;
+  taxRate!: number;
 }

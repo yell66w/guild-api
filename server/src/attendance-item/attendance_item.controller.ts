@@ -7,7 +7,6 @@ import {
   ParseUUIDPipe,
   Delete,
   Post,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { Attendance_Item_Service } from './attendances_item.service';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';

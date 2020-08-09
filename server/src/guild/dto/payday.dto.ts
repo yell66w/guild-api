@@ -5,5 +5,5 @@ export class PaydayDto {
   @Min(0)
   @Max(100)
   @IsPositive()
-  taxRate: number;
+  taxRate!: number;
 }

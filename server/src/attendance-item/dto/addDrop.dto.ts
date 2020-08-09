@@ -10,16 +10,16 @@ import {
 export class AddDropDto {
   @IsNotEmpty()
   @IsUUID()
-  attendanceId: number;
+  attendanceId!: number;
 
   @IsNotEmpty()
   @IsUUID()
-  itemId: number;
+  itemId!: number;
 
   @IsNotEmpty()
   @IsNumber()
   @IsInt()
   @Min(1)
   @IsPositive()
-  qty: number;
+  qty!: number;
 }

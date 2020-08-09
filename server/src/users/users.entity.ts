@@ -4,6 +4,8 @@ import {
   Column,
   OneToMany,
   BaseEntity,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { UserStatus, UserRole } from './users.categories';
 import { Transaction } from './transactions.entity';
@@ -11,34 +13,37 @@ import { Attendance_User } from '../attendance-user/attendance_user.entity';
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id!: number;
 
   @Column({ unique: true })
-  IGN: string;
+  IGN!: string;
 
   @Column({ unique: true })
-  username: string;
+  username!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Column('double precision', { default: () => 0 })
-  ap: number;
+  ap!: number;
 
   @Column('double precision', { default: () => 0 })
-  gp: number;
+  gp!: number;
 
-  @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })
-  createdAt: Date;
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 
   @Column()
-  salt: string;
+  salt!: string;
 
   @Column({ type: 'enum', enum: UserStatus, default: UserStatus.PENDING })
-  status: string;
+  status!: string;
 
   @Column({ type: 'enum', enum: UserRole, default: UserRole.MEMBER })
-  role: string;
+  role!: string;
 
   @OneToMany(
     () => Transaction,

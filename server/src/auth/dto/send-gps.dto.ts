@@ -1,8 +1,9 @@
-import { IsNotEmpty, IsNumber, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, Min, IsPositive } from 'class-validator';
 
 export class SendGPSDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(1)
-  amount: number;
+  @IsPositive()
+  amount!: number;
 }

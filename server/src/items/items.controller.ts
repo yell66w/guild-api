@@ -39,7 +39,7 @@ export class ItemsController {
   createItem(
     @GetUser() user: User,
     @Body(ItemTypeValidationPipe) createItemDto: CreateItemDto,
-  ): Promise<Item> {
+  ): Promise<Item | undefined> {
     return this.itemsService.createItem(user.IGN, createItemDto);
   }
   @Put(':id')

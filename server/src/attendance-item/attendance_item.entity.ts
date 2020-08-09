@@ -4,6 +4,8 @@ import {
   BaseEntity,
   ManyToOne,
   Column,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Attendance } from '../attendances/attendances.entity';
 import { Item } from '../items/items.entity';
@@ -11,31 +13,37 @@ import { Item } from '../items/items.entity';
 @Entity()
 export class Attendance_Item extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id!: number;
 
   @ManyToOne(
     () => Item,
     item => item.attendances,
     { cascade: true, onDelete: 'CASCADE' },
   )
-  public item: Item;
+  public item!: Item;
 
   @Column('uuid')
-  itemId: number;
+  itemId!: number;
 
   @ManyToOne(
     () => Attendance,
     attendance => attendance.items,
     { cascade: true, onDelete: 'CASCADE' },
   )
-  public attendance: Attendance;
+  public attendance!: Attendance;
 
   @Column('uuid')
-  attendanceId: number;
+  attendanceId!: number;
 
   @Column('int')
-  qty: number;
+  qty!: number;
 
   @Column('double precision', { default: 0 })
-  gp_price: number;
+  gp_price!: number;
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }

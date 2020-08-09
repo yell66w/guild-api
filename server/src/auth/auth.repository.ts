@@ -7,7 +7,11 @@ import { MarkAttendanceDto } from '../attendance-user/dto/mark-attendance.dto';
 import { Attendance_User } from '../attendance-user/attendance_user.entity';
 import { Attendance } from '../attendances/attendances.entity';
 import { AttendancesStatus } from 'src/attendances/attendances.categories';
-import { UnauthorizedException, BadRequestException } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ActivityCategory } from 'src/activities/activities.categories';
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
@@ -34,6 +38,7 @@ export class AuthRepository extends Repository<User> {
       message: `Successfully sent ${amount} GPS to ${receiver.IGN}. Remaining balance:${user.gp}`,
     };
   }
+  /** issue -  refactor to subscriber */
   async markAttendance(
     userId: number,
     attendanceId: number,
@@ -46,6 +51,9 @@ export class AuthRepository extends Repository<User> {
       relations: ['activityPoint', 'guild'],
     });
 
+    /** Check if attendance is legit */
+    if (!attendance) throw new NotFoundException('Attendance does not exist');
+
     /** Check if the attendance is still open */
     if (attendance.status !== AttendancesStatus.OPEN) {
       throw new UnauthorizedException('Too late! Attendance is already closed');
@@ -53,6 +61,7 @@ export class AuthRepository extends Repository<User> {
 
     /** Get authenticated user */
     const user = await this.findOne(userId);
+    if (!user) throw new NotFoundException('User does not exist');
 
     /** Check if Attendance & User relationship already exists */
     const AUrecord = await Attendance_User.findOne({

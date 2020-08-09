@@ -4,7 +4,6 @@ import {
   IsNumber,
   Min,
   IsOptional,
-  IsIn,
   IsInt,
 } from 'class-validator';
 
@@ -12,23 +11,23 @@ export class UpdateItemDto {
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  name: string;
+  name?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  type: string;
+  type?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  gp_price: number;
+  gp_price?: number;
 
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
   @IsInt()
   @Min(0)
-  qty: number;
+  qty?: number;
 }

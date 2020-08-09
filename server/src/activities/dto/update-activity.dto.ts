@@ -8,10 +8,10 @@ export class UpdateActivityDto {
   @Length(3, 30, {
     message: 'The name must be at least 3 but not longer than 30 characters',
   })
-  name: string;
+  name?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  category: ActivityCategory;
+  category?: ActivityCategory;
 }

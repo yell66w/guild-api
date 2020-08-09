@@ -4,7 +4,7 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { Repository, Not } from 'typeorm';
+import { Not } from 'typeorm';
 import { Activity } from './activities.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ActivitiesRepository } from './activities.repository';
@@ -25,7 +25,7 @@ export class ActivitiesService {
       relations: ['activityPoints', 'attendances'],
     });
   }
-  async getOne(id: number): Promise<Activity> {
+  async getOne(id: number): Promise<Activity | undefined> {
     const found = this.activitiesRepository.findOne(id);
     if (!found) throw new NotFoundException('Activity Not Found');
     return found;
@@ -42,7 +42,7 @@ export class ActivitiesService {
   async updateActivity(
     id: number,
     updateActivityDto: UpdateActivityDto,
-  ): Promise<Activity> {
+  ): Promise<Activity | undefined> {
     try {
       await this.activitiesRepository.update(id, updateActivityDto);
       const activity = await this.getOne(id);
@@ -62,6 +62,7 @@ export class ActivitiesService {
           }
         });
         const guild = await Guild.findOne({ name: 'Bank' });
+        if (!guild) throw new NotFoundException('Guild does not exist');
 
         if (category === ActivityCategory.DEFAULT) {
           guild.weeklyGP -= weeklyGP;
@@ -84,6 +85,7 @@ export class ActivitiesService {
   }
   async deleteActivity(id: number): Promise<any> {
     const activity = await this.activitiesRepository.findOne(id);
+    if (!activity) throw new NotFoundException('Activity does not exist!');
     if (activity.category === ActivityCategory.PAYDAY) {
       let weeklyGP = 0;
       let weeklyAP = 0;
@@ -96,13 +98,14 @@ export class ActivitiesService {
         weeklyAP += attendance.ap_total;
       });
       const guild = await Guild.findOne({ name: 'Bank' });
+      if (!guild) throw new NotFoundException('Guild does not exist');
       guild.weeklyGP -= weeklyGP;
       guild.weeklyAP -= weeklyAP;
       await Guild.save(guild);
     }
 
     const result = await this.activitiesRepository.delete(id);
-    if (result.affected <= 0)
+    if (result.affected && result.affected <= 0)
       throw new NotFoundException('Activity does not exist');
   }
 }

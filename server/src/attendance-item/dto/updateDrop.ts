@@ -6,5 +6,5 @@ export class UpdateDropDto {
   @IsInt()
   @Min(1)
   @IsPositive()
-  qty: number;
+  qty!: number;
 }

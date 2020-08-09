@@ -2,8 +2,6 @@ import {
   Injectable,
   NotFoundException,
   MethodNotAllowedException,
-  ConflictException,
-  InternalServerErrorException,
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -38,9 +36,14 @@ export class ItemsService {
   async createItem(
     author: string,
     createItemDto: CreateItemDto,
-  ): Promise<Item> {
+  ): Promise<Item | undefined> {
     try {
-      return await this.itemsRepository.save({ ...createItemDto, author });
+      const item = await this.itemsRepository.save({
+        ...createItemDto,
+        author,
+      });
+      if (!item) throw new BadRequestException('Item not created');
+      return item;
     } catch (error) {
       if (error.code === '23505')
         throw new MethodNotAllowedException('Item already exist');
@@ -50,7 +53,8 @@ export class ItemsService {
     try {
       const res = await this.itemsRepository.update(id, updateItemDto);
 
-      if (res.affected <= 0) throw new NotFoundException('Item does not exist');
+      if (res.affected && res.affected <= 0)
+        throw new NotFoundException('Item does not exist');
 
       /** Check if GP price was also updated */
       if (updateItemDto.gp_price) {
@@ -67,6 +71,8 @@ export class ItemsService {
           const attendance = await Attendance.findOne(attendanceId, {
             relations: ['guild'],
           });
+          if (!attendance)
+            throw new NotFoundException('Attendance does not exist');
 
           const oldItemPrice = qty * oldItemGP;
           const newItemPrice = qty * newItemGP;
@@ -102,6 +108,7 @@ export class ItemsService {
       const attendance = await Attendance.findOne(attendanceId, {
         relations: ['guild'],
       });
+      if (!attendance) throw new NotFoundException('Attendance does not exist');
       const totalItemPrice: number = qty * gp_price;
       attendance.gp_total -= totalItemPrice;
       attendance.guild.weeklyGP -= totalItemPrice;
@@ -109,7 +116,8 @@ export class ItemsService {
     });
 
     const res = await this.itemsRepository.delete(id);
-    if (res.affected <= 0) throw new NotFoundException('Item does not exist');
+    if (res.affected && res.affected <= 0)
+      throw new NotFoundException('Item does not exist');
 
     return {
       message: 'Item deleted successfully',

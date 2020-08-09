@@ -4,34 +4,39 @@ import {
   Column,
   OneToMany,
   BaseEntity,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Attendance } from 'src/attendances/attendances.entity';
 @Entity()
 export class Guild extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id!: number;
 
   @Column({ unique: true })
-  name: string;
+  name!: string;
 
   @Column('double precision', { default: () => 0 })
-  weeklyAP: number;
+  weeklyAP!: number;
 
   @Column('double precision', { default: () => 0 })
-  weeklyGP: number;
+  weeklyGP!: number;
 
   @Column('double precision', { default: () => 0 })
-  totalGP: number;
+  totalGP!: number;
 
   @Column('double precision', { default: () => 0 })
-  taxRate: number;
+  taxRate!: number;
 
-  @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })
-  createdAt: Date;
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 
   @OneToMany(
     () => Attendance,
     attendance => attendance.guild,
   )
-  public attendances: Attendance[];
+  public attendances!: Attendance[];
 }

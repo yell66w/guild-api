@@ -4,5 +4,5 @@ export class CreateGuildDto {
   @IsNotEmpty()
   @IsString()
   @Length(3, 30)
-  name: string;
+  name!: string;
 }

@@ -7,5 +7,8 @@
   "database": "mafia",
   "entities": ["dist/**/*.entity{.ts,.js}"],
   "synchronize": true,
-  "logging": true
+  "logger": "advanced-console",
+  "logging": ["log", "error", "warn"],
+  "maxQueryExecutionTime": 1000,
+  "subscribers": ["dist/**/*.subscriber{.ts,.js}"]
 }

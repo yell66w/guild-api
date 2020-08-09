@@ -3,7 +3,6 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
-  MethodNotAllowedException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -14,7 +13,6 @@ import { Activity } from '../activities/activities.entity';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { Attendance_User } from '../attendance-user/attendance_user.entity';
 import { Guild } from 'src/guild/guild.entity';
-import { DefaultPayDto } from './dto/default-pay.dto';
 import { ActivityCategory } from 'src/activities/activities.categories';
 import { AttendancesStatus } from './attendances.categories';
 
@@ -82,6 +80,7 @@ export class AttendancesService {
   ): Promise<Attendance> {
     try {
       const attendance = await this.attendancesRepository.findOne(attendanceId);
+      if (!attendance) throw new NotFoundException('Attendance does not exist');
       if (attendance.status === AttendancesStatus.PAID)
         throw new BadRequestException('Attendance is already paid!');
       const updatedAttendance = { ...attendance, ...updateAttendanceDto };
@@ -94,7 +93,7 @@ export class AttendancesService {
   async deleteAttendance(id: number): Promise<any> {
     //issue =
     const result = await this.attendancesRepository.delete(id);
-    if (result.affected <= 0) {
+    if (result.affected && result.affected <= 0) {
       throw new NotFoundException('Attendance does not exist');
     }
   }

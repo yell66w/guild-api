@@ -1,10 +1,10 @@
-import { IsOptional, IsNotEmpty } from 'class-validator';
+import { IsOptional } from 'class-validator';
 import { ItemType } from '../items.categories';
 
 export class GetItemsFilterDto {
   @IsOptional()
-  type: ItemType;
+  type?: ItemType;
 
   @IsOptional()
-  search: string;
+  search?: string;
 }

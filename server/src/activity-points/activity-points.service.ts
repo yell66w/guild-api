@@ -1,9 +1,7 @@
 import {
   Injectable,
   NotFoundException,
-  MethodNotAllowedException,
   NotAcceptableException,
-  BadRequestException,
 } from '@nestjs/common';
 import { ActivityPointsRepository } from './activity-points.repository';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -68,8 +66,9 @@ export class ActivityPointsService {
     return await this.activityPointsRepository.save(updatedActivityPoint);
   }
   async deleteActivityPoint(id: number): Promise<void> {
+    //issue do not return voids/any
     const result = await this.activityPointsRepository.delete(id);
-    if (result.affected <= 0)
+    if (result.affected && result.affected <= 0)
       throw new NotFoundException('Activity Point does not exist');
   }
 }

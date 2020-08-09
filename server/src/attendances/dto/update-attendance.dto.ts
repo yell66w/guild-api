@@ -3,7 +3,6 @@ import {
   IsOptional,
   IsString,
   Length,
-  IsNumber,
   IsUUID,
 } from 'class-validator';
 
@@ -11,20 +10,20 @@ export class UpdateAttendanceDto {
   @IsOptional()
   @IsString()
   @Length(3, 30)
-  remarks: string;
+  remarks?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  result: string;
+  result?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsString()
-  status: string;
+  status?: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsUUID()
-  activityPointId: number;
+  activityPointId?: number;
 }

@@ -1,6 +1,5 @@
 import {
   Injectable,
-  ConflictException,
   NotFoundException,
   MethodNotAllowedException,
 } from '@nestjs/common';
@@ -26,8 +25,10 @@ export class UsersService {
   }
   async getCurrentUser(id: number): Promise<User> {
     const user = await this.usersRepository.findOne(id);
-    user.password = undefined;
-    user.salt = undefined;
+    if (!user) throw new NotFoundException('User does not exist');
+    //issue do not select password and salt
+    // user.password = undefined;
+    // user.salt = undefined;
     return user;
   }
   async getOne(id: number): Promise<User> {
@@ -55,8 +56,9 @@ export class UsersService {
     if (status) user.status = status;
 
     user = await this.usersRepository.save(user);
-    user.password = undefined;
-    user.salt = undefined;
+    //issue do not select password and salt
+    // user.password = undefined;
+    // user.salt = undefined;
     return user;
   }
   async updatePoints(
@@ -68,15 +70,14 @@ export class UsersService {
     if (ap) user.ap = ap;
     if (gp) user.gp = gp;
 
-    user = await this.usersRepository.save(user);
-    user.password = undefined;
-    user.salt = undefined;
-    return user;
+    return await this.usersRepository.save(user);
+    /**issue do not select password & salt */
   }
 
   async deleteUser(id: number): Promise<void> {
     const result = await this.usersRepository.delete(id);
-    if (result.affected <= 0)
+    if (!result.affected) throw new NotFoundException('User does not exist');
+    if (result.affected && result.affected <= 0)
       throw new NotFoundException('User does not exist');
   }
 
@@ -103,6 +104,8 @@ export class UsersService {
 
     const item = await Item.findOne(itemId);
     const user = await this.usersRepository.findOne(userId);
+    if (!item) throw new NotFoundException('Item does not exist');
+    if (!user) throw new NotFoundException('User does not exist');
 
     if (item.qty <= 0) throw new MethodNotAllowedException('No items in stock');
     if (user.gp < (item.gp_price - item.gp_price * (discount / 100)) * qty)

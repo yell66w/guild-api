@@ -4,10 +4,10 @@ export class ManageUserPointsDto {
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
-  ap: number;
+  ap?: number;
 
   @IsOptional()
   @IsNotEmpty()
   @IsNumber()
-  gp: number;
+  gp?: number;
 }

@@ -5,7 +5,8 @@ import {
   BaseEntity,
   ManyToOne,
   OneToMany,
-  OneToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Activity } from '../activities/activities.entity';
 import { AttendancesStatus } from './attendances.categories';
@@ -18,75 +19,78 @@ import { ActivityPoint } from 'src/activity-points/activity-points.entity';
 @Entity()
 export class Attendance extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id!: number;
 
   @Column()
-  name: string;
+  name!: string;
 
-  @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })
-  createdAt: Date;
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 
   @Column('double precision', { default: () => 0 })
-  ap_total: number;
+  ap_total!: number;
 
   @Column('double precision', { default: () => 0 })
-  gp_total: number;
+  gp_total!: number;
 
   @Column({ nullable: true })
-  remarks: string;
+  remarks!: string;
 
   @Column()
-  author: string;
+  author!: string;
 
   @Column({
     type: 'enum',
     enum: AttendancesStatus,
     default: AttendancesStatus.OPEN,
   })
-  status: string;
+  status!: string;
 
   @Column()
-  result: string;
+  result!: string;
 
   @ManyToOne(
     () => Activity,
     activity => activity.attendances,
     { cascade: true, onDelete: 'CASCADE' },
   )
-  activity: Activity;
+  activity!: Activity;
 
   @OneToMany(
     () => Attendance_User,
     attendanceUser => attendanceUser.attendance,
   )
-  public participants: Attendance_User[];
+  public participants!: Attendance_User[];
 
   @OneToMany(
     () => Attendance_Item,
     attendanceItem => attendanceItem.attendance,
   )
-  public items: Attendance_Item[];
+  public items!: Attendance_Item[];
 
   @ManyToOne(
     () => Guild,
     guild => guild.attendances,
     { cascade: true, onDelete: 'CASCADE' },
   )
-  guild: Guild;
+  guild!: Guild;
 
   @Column({
     type: 'enum',
     enum: ActivityCategory,
     default: ActivityCategory.DEFAULT,
   })
-  category: string;
+  category!: string;
 
   @ManyToOne(
     () => ActivityPoint,
     activityPoint => activityPoint.attendances,
   )
-  activityPoint: ActivityPoint;
+  activityPoint!: ActivityPoint;
 
-  @Column({ nullable: true })
-  activityPointId: number;
+  @Column({ nullable: true }) /**issue change to not nullable? */
+  activityPointId!: number;
 }

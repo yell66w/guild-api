@@ -50,7 +50,7 @@ export class AuthService {
     return user;
   }
 
-  async signIn(credentials) {
+  async signIn(credentials: AuthSignInCredentialsDto) {
     const user = await this.validateUser(credentials);
     const { username, id, IGN, role, status } = user;
     const payload = { username, id, IGN, role, status };

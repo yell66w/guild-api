@@ -1,9 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from './users.entity';
 @Entity()
 export class Transaction {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id!: number;
 
   @Column('uuid')
   receiverId!: number;
@@ -21,6 +28,9 @@ export class Transaction {
   @Column('uuid')
   userId!: number;
 
-  @Column('timestamp', { default: () => 'LOCALTIMESTAMP' })
-  createdAt: Date;
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }

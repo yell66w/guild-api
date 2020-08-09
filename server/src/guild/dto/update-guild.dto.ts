@@ -4,10 +4,10 @@ export class UpdateGuildDto {
   @IsNotEmpty()
   @IsString()
   @Length(3, 30)
-  oldName: string;
+  oldName!: string;
 
   @IsNotEmpty()
   @IsString()
   @Length(3, 30)
-  name: string;
+  name!: string;
 }

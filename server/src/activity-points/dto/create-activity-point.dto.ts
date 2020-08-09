@@ -2,14 +2,14 @@ import { IsNotEmpty, IsNumber, Min, IsUUID } from 'class-validator';
 
 export class CreateActivityPointDto {
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @IsNotEmpty()
   @IsNumber()
   @Min(1)
-  ap: number;
+  ap!: number;
 
   @IsNotEmpty()
   @IsUUID()
-  activityId: number;
+  activityId!: number;
 }

@@ -20,6 +20,7 @@ export class Attendance_Item_Service {
     private attendanceItemRepository: Attendance_Item_Repository,
   ) {}
 
+  /** issue try to refactor(change this to a subscriber/listener) */
   async addDrop(addDropDto: AddDropDto): Promise<Attendance_Item> {
     const { itemId, qty, attendanceId } = addDropDto;
 
@@ -28,6 +29,7 @@ export class Attendance_Item_Service {
     const attendance = await Attendance.findOne(attendanceId, {
       relations: ['guild'],
     });
+    if (!attendance) throw new NotFoundException('Attendance does not exist!');
     if (attendance.status === AttendancesStatus.PAID)
       throw new BadRequestException('Attendance is already PAID!');
 
@@ -84,9 +86,12 @@ export class Attendance_Item_Service {
         attendance_item.attendanceId,
         { relations: ['guild'] },
       );
+      if (!attendance)
+        throw new NotFoundException('Attendance does not exist!');
       if (attendance.status === AttendancesStatus.PAID)
         throw new BadRequestException('Attendance is already PAID!');
       const item = await Item.findOne(attendance_item.itemId);
+      if (!item) throw new NotFoundException('Item does not exist!');
 
       /** Compute Total Drop Item Price */
       const gp_price = item.gp_price;
@@ -116,8 +121,13 @@ export class Attendance_Item_Service {
       });
 
       /** Only return attendance & item relationship data if update was successfull */
-      if (res.affected > 0) {
-        return await this.attendanceItemRepository.findOne(id);
+      if (res.affected && res.affected > 0) {
+        const AIRecord = await this.attendanceItemRepository.findOne(id);
+        if (!AIRecord)
+          throw new NotFoundException(
+            'Attendance & Item relationship not found',
+          );
+        return AIRecord;
       } else {
         throw new BadRequestException('Updating failed');
       }
@@ -133,12 +143,15 @@ export class Attendance_Item_Service {
     /** Check if attendance and item relationship exists */
     if (attendance_item) {
       const item = await Item.findOne(attendance_item.itemId);
+      if (!item) throw new NotFoundException('Item does not exist!');
       const attendance = await Attendance.findOne(
         attendance_item.attendanceId,
         {
           relations: ['guild'],
         },
       );
+      if (!attendance)
+        throw new NotFoundException('Attendance does not exist!');
       if (attendance.status === AttendancesStatus.PAID)
         throw new BadRequestException('Attendance is already PAID!');
 
@@ -160,7 +173,7 @@ export class Attendance_Item_Service {
 
       /** Delete Item and Attendance Relationship */
       const res = await this.attendanceItemRepository.delete(id);
-      if (res.affected > 0) {
+      if (res.affected && res.affected > 0) {
         return true;
       } else {
         throw new BadRequestException('Cannot delete drop');

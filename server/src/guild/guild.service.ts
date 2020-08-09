@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GuildRepository } from './guild.repository';
 import { Guild } from './guild.entity';
@@ -10,7 +14,6 @@ import { Not, MoreThan } from 'typeorm';
 import { User } from 'src/users/users.entity';
 import { PaydayDto } from './dto/payday.dto';
 import { ActivityCategory } from 'src/activities/activities.categories';
-import { DefaultPayDto } from '../attendances/dto/default-pay.dto';
 
 @Injectable()
 export class GuildService {
@@ -19,9 +22,11 @@ export class GuildService {
   ) {}
 
   async one(id: number): Promise<Guild> {
-    return await this.guildRepository.findOne(id, {
+    const guild = await this.guildRepository.findOne(id, {
       relations: ['attendances'],
     });
+    if (!guild) throw new NotFoundException('Guild Not Found!');
+    return guild;
   }
   async create(data: CreateGuildDto): Promise<Guild> {
     try {
@@ -30,10 +35,10 @@ export class GuildService {
       throw new BadRequestException('Guild name already exist');
     }
   }
-  async update(data: UpdateGuildDto): Promise<boolean> {
+  async update(data: UpdateGuildDto): Promise<boolean | undefined> {
     const { oldName, name } = data;
     const res = await this.guildRepository.update({ name: oldName }, { name });
-    return res.affected > 0 ? true : false;
+    if (res.affected) return res.affected > 0 ? true : false;
   }
   async payday(data: PaydayDto): Promise<any> {
     const { taxRate } = data;
@@ -44,6 +49,7 @@ export class GuildService {
 
     const guild = await this.guildRepository.findOne({ name: 'Bank' });
     const players = await User.find({ where: { ap: MoreThan(0) } });
+    if (!guild) throw new NotFoundException('Guild does not exist!');
 
     /** Update player GP based on contribution,weekly GP and tax rate */
     let { weeklyAP, weeklyGP, totalGP } = guild;
