@@ -13,6 +13,7 @@ import { ManageUserPointsDto } from './dto/manage-user-points.dto copy';
 import { DonateItemDto } from './dto/donate-item.dto';
 import { Item } from '../items/items.entity';
 import { RedeemItemDto } from './dto/redeem-item.dto';
+import { Guild } from 'src/guild/guild.entity';
 
 @Injectable()
 export class UsersService {
@@ -74,26 +75,31 @@ export class UsersService {
     return await this.usersRepository.save(user);
     /**issue do not select password & salt */
   }
-
   async deleteUser(id: number): Promise<void> {
     const result = await this.usersRepository.delete(id);
     if (!result.affected) throw new NotFoundException('User does not exist');
     if (result.affected && result.affected <= 0)
       throw new NotFoundException('User does not exist');
   }
-
   async donate(author: string, donateItemDto: DonateItemDto): Promise<any> {
-    const { userId, itemId, qty, discount } = donateItemDto;
+    const { userId, itemId, qty, interest } = donateItemDto;
 
     const item = await Item.findOne(itemId);
     const user = await this.usersRepository.findOne(userId);
+    const guild = await Guild.findOne({ name: 'Bank' });
+    if (!guild) throw new NotFoundException('Guild does not exist!');
     if (item && user) {
+      const totalItemGPPrice: number =
+        (item.gp_price - item.gp_price * (interest / 100)) * qty; //issue - interest rate? formula? tax?
       item.qty += qty;
-      user.gp += (item.gp_price - item.gp_price * (discount / 100)) * qty;
+      user.gp += totalItemGPPrice;
+      guild.totalGP -= totalItemGPPrice;
       await Item.save(item);
       await this.usersRepository.save(user);
+      await Guild.save(guild);
       Logger.log(
-        `${user.IGN} donated x${qty} ${item.name} - verified by ${author} `,
+        `The Guild bought x${qty} ${item.name} from ${user.IGN} with ${interest}% interest for a total of ${totalItemGPPrice}GP - verified by ${author} `,
+        'UsersService',
       );
       return {
         message: 'Succesfully donated an item',
@@ -102,26 +108,34 @@ export class UsersService {
       throw new NotFoundException('Item or User does not exist');
     }
   }
-
   async redeem(author: string, redeemItemDto: RedeemItemDto): Promise<any> {
     const { userId, itemId, qty, discount } = redeemItemDto;
 
     const item = await Item.findOne(itemId);
     const user = await this.usersRepository.findOne(userId);
+    const guild = await Guild.findOne({ name: 'Bank' });
     if (!item) throw new NotFoundException('Item does not exist');
     if (!user) throw new NotFoundException('User does not exist');
+    if (!guild) throw new NotFoundException('Guild does not exist');
 
+    const totalItemGPPrice: number =
+      (item.gp_price - item.gp_price * (discount / 100)) * qty;
     if (item.qty <= 0) throw new MethodNotAllowedException('No items in stock');
-    if (user.gp < (item.gp_price - item.gp_price * (discount / 100)) * qty)
+    if (item.qty < qty)
+      throw new MethodNotAllowedException('Not enough items in stock');
+    if (user.gp < totalItemGPPrice)
       throw new MethodNotAllowedException('User has insufficient GP');
     if (item && user) {
       item.qty -= qty;
-      user.gp -= (item.gp_price - item.gp_price * (discount / 100)) * qty;
+      user.gp -= totalItemGPPrice;
+      guild.totalGP += totalItemGPPrice;
       await Item.save(item);
       await this.usersRepository.save(user);
+      await Guild.save(guild);
 
       Logger.log(
-        `${user.IGN} redeemed x${qty} ${item.name} - verified by ${author} `,
+        `${user.IGN} redeemed x${qty} ${item.name} with ${discount}% discount for a total of ${totalItemGPPrice}GP - verified by ${author} `,
+        'UsersService',
       );
       return {
         message: 'Succesfully redeemed an item',

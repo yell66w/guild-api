@@ -4,6 +4,7 @@ import {
   ConflictException,
   BadRequestException,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AttendancesRepository } from './attendances.repository';
@@ -97,7 +98,7 @@ export class AttendancesService {
       throw new NotFoundException('Attendance does not exist');
     }
   }
-  async defaultPay(id: number): Promise<any> {
+  async defaultPay(author: string, id: number): Promise<any> {
     /**issue Double check this nigga */
     /** Maybe add paid to AU record */
 
@@ -105,12 +106,26 @@ export class AttendancesService {
     const attendance = await this.attendancesRepository.findOne(id);
     if (attendance) {
       /** Check if attendance is of type DEFAULT */
-      if (attendance.category === ActivityCategory.PAYDAY)
-        throw new UnauthorizedException('Attendance type is not PAYDAY');
+      if (attendance.category === ActivityCategory.PAYDAY) {
+        Logger.error(
+          `${author} failed to activate an ${attendance.name} of type ${attendance.category}`,
+          '',
+          'AttendancePayment',
+        );
+        throw new UnauthorizedException(
+          'Attendance is not set to default type',
+        );
+      }
 
       /** Check if attendance is already PAID*/
-      if (attendance.status === AttendancesStatus.PAID)
+      if (attendance.status === AttendancesStatus.PAID) {
+        Logger.error(
+          `${author} failed to activate a PAID ${attendance.name}`,
+          '',
+          'AttendancePayment',
+        );
         throw new UnauthorizedException('Attendance is already PAID!');
+      }
 
       const { gp_total } = attendance;
       /** FIND ALL Attendance & User Records */
@@ -126,6 +141,9 @@ export class AttendancesService {
         AURecords.map(async AURecord => {
           AURecord.user.gp += totalGPToBeObtained;
           await Attendance_User.save(AURecord);
+          Logger.log(
+            `${AURecord.user.IGN} received ${totalGPToBeObtained} GP from ${attendance.name}`,
+          );
         });
 
         /**issue Delete the AU Record ?? Maybe don't delete? Just add paid? */
@@ -135,11 +153,27 @@ export class AttendancesService {
         attendance.status = AttendancesStatus.PAID;
 
         /** Return the saved attendance */
-        return await this.attendancesRepository.save(attendance);
+
+        const newAttendance = await this.attendancesRepository.save(attendance);
+        Logger.log(
+          `${author} successfully activated ${newAttendance.name} payment!`,
+          'AttendancePayment',
+        );
+        return newAttendance;
       } else {
+        Logger.error(
+          `${author} failed to activate ${attendance.name} payment with 0 participants!`,
+          '',
+          'AttendancePayment',
+        );
         throw new NotFoundException('Participant(s) not found');
       }
     } else {
+      Logger.error(
+        `${author} failed to activate an attendance that does not exist!`,
+        '',
+        'AttendancePayment',
+      );
       throw new NotFoundException('Attendance does not exist');
     }
   }

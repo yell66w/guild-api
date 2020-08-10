@@ -46,8 +46,11 @@ export class AttendancesController {
     );
   }
   @Put(':id/default-pay')
-  defaultPay(@Param('id', ParseUUIDPipe) id: number): Promise<any> {
-    return this.attendancesService.defaultPay(id);
+  defaultPay(
+    @GetUser() user: User,
+    @Param('id', ParseUUIDPipe) id: number,
+  ): Promise<any> {
+    return this.attendancesService.defaultPay(user.IGN, id);
   }
 
   @Put(':id')

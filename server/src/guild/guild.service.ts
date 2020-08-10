@@ -36,8 +36,11 @@ export class GuildService {
     }
   }
   async update(data: UpdateGuildDto): Promise<boolean | undefined> {
-    const { oldName, name } = data;
-    const res = await this.guildRepository.update({ name: oldName }, { name });
+    const { totalGP } = data;
+    const res = await this.guildRepository.update(
+      { name: 'Bank' },
+      { totalGP },
+    );
     if (res.affected) return res.affected > 0 ? true : false;
   }
   async payday(data: PaydayDto): Promise<any> {

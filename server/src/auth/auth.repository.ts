@@ -15,7 +15,7 @@ import {
 import { ActivityCategory } from 'src/activities/activities.categories';
 @EntityRepository(User)
 export class AuthRepository extends Repository<User> {
-  async signUp(credentials: AuthSignUpCredentialsDto): Promise<void> {
+  async signUp(credentials: AuthSignUpCredentialsDto): Promise<any> {
     const { password } = credentials;
     delete credentials.confirmPassword;
     credentials.salt = await bcrypt.genSalt();

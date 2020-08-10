@@ -1,13 +1,9 @@
-import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsPositive, IsNumber } from 'class-validator';
 
 export class UpdateGuildDto {
+  @IsOptional()
   @IsNotEmpty()
-  @IsString()
-  @Length(3, 30)
-  oldName!: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @Length(3, 30)
-  name!: string;
+  @IsPositive()
+  @IsNumber()
+  totalGP?: number;
 }

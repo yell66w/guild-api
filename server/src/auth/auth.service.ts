@@ -15,6 +15,7 @@ import { User } from '../users/users.entity';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { SendGPSDto } from './dto/send-gps.dto';
 import { MarkAttendanceDto } from '../attendance-user/dto/mark-attendance.dto';
+import { UserStatus } from 'src/users/users.categories';
 @Injectable()
 export class AuthService {
   constructor(
@@ -22,11 +23,19 @@ export class AuthService {
     @InjectRepository(AuthRepository)
     private authRepository: AuthRepository,
   ) {}
-  async signUp(credentials: AuthSignUpCredentialsDto): Promise<void> {
+  async signUp(credentials: AuthSignUpCredentialsDto): Promise<any> {
     const { password, confirmPassword } = credentials;
     if (password === confirmPassword) {
+      const found = await this.authRepository.findOne({
+        where: [{ username: credentials.username }, { IGN: credentials.IGN }],
+      });
+      if (found) throw new UnauthorizedException('User already exists!');
       try {
         await this.authRepository.signUp(credentials);
+        return {
+          message:
+            "Your request to join the guild has been received. Please wait for the admin's approval.",
+        };
       } catch (error) {
         throw new ConflictException('Invalid Form Submission');
       }
@@ -38,7 +47,7 @@ export class AuthService {
   async validateUser(credentials: AuthSignInCredentialsDto): Promise<User> {
     const { username, password } = credentials;
     const user = await this.authRepository.findOne({
-      where: { username },
+      where: { username, status: UserStatus.APPROVED },
     });
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');

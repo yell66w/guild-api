@@ -4,7 +4,9 @@ import {
   IsString,
   Length,
   IsUUID,
+  IsEmpty,
 } from 'class-validator';
+import { ActivityCategory } from 'src/activities/activities.categories';
 
 export class UpdateAttendanceDto {
   @IsOptional()
@@ -26,4 +28,10 @@ export class UpdateAttendanceDto {
   @IsNotEmpty()
   @IsUUID()
   activityPointId?: number;
+
+  @IsEmpty()
+  category?: ActivityCategory;
+
+  @IsEmpty()
+  name?: string;
 }

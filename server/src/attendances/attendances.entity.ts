@@ -57,7 +57,7 @@ export class Attendance extends BaseEntity {
     activity => activity.attendances,
     { cascade: true, onDelete: 'CASCADE' },
   )
-  activity!: Activity;
+  public activity!: Activity;
 
   @OneToMany(
     () => Attendance_User,

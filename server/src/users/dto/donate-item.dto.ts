@@ -18,5 +18,5 @@ export class DonateItemDto {
   @IsNumber()
   @Min(0)
   @Max(100)
-  discount!: number;
+  interest!: number;
 }

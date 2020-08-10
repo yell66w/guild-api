@@ -22,7 +22,7 @@ export class ActivitiesService {
   ) {}
   async getActivities(): Promise<Activity[]> {
     return await this.activitiesRepository.find({
-      relations: ['activityPoints', 'attendances'],
+      relations: ['activityPoints'],
     });
   }
   async getOne(id: number): Promise<Activity | undefined> {
@@ -44,6 +44,7 @@ export class ActivitiesService {
     updateActivityDto: UpdateActivityDto,
   ): Promise<Activity | undefined> {
     try {
+      /**issue = update as a listener/subscriber? */
       await this.activitiesRepository.update(id, updateActivityDto);
       const activity = await this.getOne(id);
       if (updateActivityDto.category) {
