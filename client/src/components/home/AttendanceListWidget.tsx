@@ -1,21 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import AttendanceBoxWidget from "./AttendanceBoxWidget";
-import { GuildAPI } from "../API/GuildAPI";
 import { AttendanceWidgetModel } from "../interface/AttendanceModel";
 
-const AttendanceListWidget = () => {
-  const [attendances, setAttendances] = useState([]);
-  const getAttendance = async () => {
-    const res = await GuildAPI.get("attendances", {
-      params: {
-        limit: 5,
-      },
-    });
-    setAttendances(res.data);
-  };
-  useEffect(() => {
-    getAttendance();
-  }, []);
+interface Props {
+  attendances: AttendanceWidgetModel[];
+}
+
+const AttendanceListWidget: React.FC<Props> = ({ attendances }) => {
   return (
     <div className="w-full md:w-2/3 ">
       {attendances

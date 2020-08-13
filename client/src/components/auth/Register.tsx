@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import InputForm from "../misc/InputForm";
 import { GuildAPI } from "../API/GuildAPI";
+import { ToastContainer, toast } from "react-toastify";
+import "../../css/main.css";
 
 const Register = () => {
   const [data, setData] = useState({
@@ -11,10 +13,7 @@ const Register = () => {
     confirmPassword: "",
   });
   const [redirect, setRedirect] = useState(false);
-  const [error, setError] = useState({
-    hasError: false,
-    message: [],
-  });
+
   const onRegister = async (e: any) => {
     e.preventDefault();
     try {
@@ -23,16 +22,15 @@ const Register = () => {
     } catch (error) {
       if (error.response) {
         if (typeof error.response.data.message === "string") {
-          setError({
-            hasError: true,
-            message: error.response.data.message,
+          toast.error(error.response.data.message, {
+            bodyClassName: "text-sm",
           });
         } else if (typeof error.response.data.message === "object") {
-          setError({
-            hasError: true,
-            message: error.response.data.message[0],
+          toast.error(error.response.data.message[0], {
+            bodyClassName: "text-sm",
           });
         }
+
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
@@ -42,17 +40,8 @@ const Register = () => {
 
   return (
     <div className="m-16 flex justify-center flex-col items-center">
-      {error.hasError ? (
-        <div
-          className="bg-red-100 mb-4 border-l-4 w-1/3 text-sm border-red-500 text-red-700 p-4"
-          role="alert"
-        >
-          <p className="font-bold">Error</p>
-          <p>{error.message}</p>
-        </div>
-      ) : (
-        ""
-      )}
+      <ToastContainer />
+
       <form
         onSubmit={(e) => onRegister(e)}
         className="bg-white shadow-md rounded-lg px-10 py-8 lg:w-1/3 flex flex-col items-center"

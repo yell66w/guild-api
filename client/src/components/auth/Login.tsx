@@ -7,13 +7,14 @@ const Login = () => {
     username: "",
     password: "",
   });
-  const onFormSubmit = () => {};
+  const onFormSubmit = (e: any) => {
+    e.preventDefault();
+  };
   return (
     <div className="m-16 flex justify-center">
       <form
-        onSubmit={onFormSubmit}
-        className="bg-white shadow-md rounded-lg px-10 py-8"
-        method="POST"
+        onSubmit={(e) => onFormSubmit(e)}
+        className="bg-white shadow-md rounded-lg px-10 py-8 lg:w-1/3 flex flex-col items-center"
       >
         <div className="flex  justify-center mb-5">
           <h1 className="font-bold text-xl ">Login</h1>

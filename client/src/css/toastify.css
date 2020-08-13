@@ -1,0 +1,27 @@
+.Toastify__toast--error {
+  background: #e53e3e !important;
+  padding: 5% !important;
+}
+
+.Toastify__toast--success {
+  background: #48bb78 !important;
+  padding: 5% !important;
+}
+
+.Toastify__toast--dark {
+  background: #000 !important;
+  padding: 5% !important;
+}
+.Toastify__toast--default {
+  background: #fff !important;
+  padding: 5% !important;
+}
+.Toastify__toast--info {
+  background: #38b2ac !important;
+  padding: 5% !important;
+}
+.Toastify__toast--warning {
+  background: #f6e05e !important;
+  padding: 5% !important;
+  color: #2d3748;
+}
