@@ -61,12 +61,20 @@ const Navigation = () => {
             Attendance
           </Link>
         </div>
-        <div className={`transition duration-500 ease-in-out ${menu} lg:block`}>
+        <div
+          className={`transition duration-500 ease-in-out ${menu} lg:block flex flex-col items-start`}
+        >
           <Link
-            to="/"
-            className="inline-block text-sm lg:px-4 py-2 leading-none rounded text-gray-900 mt-4 lg:mt-0"
+            to="/login"
+            className="lg:transition lg:duration-500 lg:ease-in-out lg:transform lg:hover:scale-105 inline-block text-sm lg:px-4 py-2 leading-none rounded text-gray-900 mt-4 lg:mt-0"
           >
-            Raphael
+            Login
+          </Link>
+          <Link
+            to="/register"
+            className="lg:transition lg:transform lg:hover:scale-105 lg:duration-500 lg:ease-in-out lg:hover:bg-blue-600 lg:bg-blue-500 rounded-full inline-block text-sm lg:px-4 py-2 leading-none rounded text-gray-900 lg:text-white mt-4 lg:mt-0"
+          >
+            Register
           </Link>
         </div>
       </div>
