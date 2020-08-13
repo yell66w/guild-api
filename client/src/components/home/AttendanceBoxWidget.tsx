@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { AttendanceWidgetModel } from "../interface/AttendanceModel";
+import { Link } from "react-router-dom";
 interface Props {
   attendance: AttendanceWidgetModel;
 }
@@ -34,19 +35,21 @@ const AttendanceBoxWidget: React.FC<Props> = ({ attendance }) => {
       default:
         break;
     }
-  }, []);
+  }, [status]);
 
   return (
-    <div className="mb-3 bg-white shadow-md p-5 rounded-lg flex  flex-row">
+    <div className="mb-3 bg-white shadow-md px-5 pb-5 py-3 rounded-lg flex  flex-row">
       <div className="w-2/3">
         <div>
           <span
             className={`${color} inline-block rounded-full h-3 w-3 mr-1`}
           ></span>
-          <small>{status}</small>
+          <small className="text-gray-700">{status}</small>
         </div>
-        <div>
-          <h1 className="font-bold">{name}</h1>
+        <div className="cursor-pointer">
+          <Link to="/attendance" className="font-bold text-md">
+            {name}
+          </Link>
         </div>
       </div>
       <div className="w-1/3 flex flex-row-reverse items-center ">

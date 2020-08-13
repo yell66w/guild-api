@@ -5,8 +5,8 @@ interface Props {
 }
 const Breadcrumb: React.FC<Props> = ({ name }) => {
   return (
-    <div className="px-5 pt-5 pb-3">
-      <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
+    <div className="p-5 bg-white my-5 shadow-md rounded-lg">
+      <h1 className="text-xl font-bold text-gray-900">{name}</h1>
     </div>
   );
 };

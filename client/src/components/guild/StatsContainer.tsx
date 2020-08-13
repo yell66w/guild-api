@@ -8,7 +8,7 @@ interface Props {
 
 const StatsContainer: React.FC<Props> = ({ amount, name, currency }) => {
   return (
-    <div className="flex flex-col bg-green-400 flex-wrap mb-5 mx-5 p-5 items-center rounded-lg md:w-full">
+    <div className="flex flex-col shadow bg-white flex-wrap mb-5 mx-5 p-5 items-center rounded-lg md:w-full">
       <div>
         <h1 className="text-3xl font-bold">
           {amount}
