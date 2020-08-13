@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "@emotion/core";
-import Loader from "react-spinners/PropagateLoader";
+import Loader from "react-spinners/BeatLoader";
 
 const override = css`
   display: block;

@@ -24,6 +24,7 @@ const Register = () => {
         if (typeof error.response.data.message === "string") {
           toast.error(error.response.data.message, {
             bodyClassName: "text-sm",
+            progressClassName: "fancy-progress-bar",
           });
         } else if (typeof error.response.data.message === "object") {
           toast.error(error.response.data.message[0], {
@@ -36,7 +37,7 @@ const Register = () => {
     }
   };
 
-  if (redirect) return <Redirect to="/login" />;
+  if (redirect) return <Redirect to="/verification" />;
 
   return (
     <div className="m-16 flex justify-center flex-col items-center">

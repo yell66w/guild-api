@@ -1,12 +1,25 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-const Navigation = () => {
+interface Props {
+  isAuth: boolean;
+  authUser: {
+    IGN: string;
+  };
+  setIsAuth: (value: boolean) => void;
+}
+
+const Navigation: React.FC<Props> = ({ isAuth, authUser, setIsAuth }) => {
   const [menu, setMenu] = useState("hidden");
   const [hidden, setHidden] = useState(false);
   const toggleMenu = () => {
     setMenu(hidden ? "hidden" : "block");
     setHidden(!hidden);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setIsAuth(false);
   };
   return (
     <nav className="flex items-center justify-between flex-wrap bg-white p-5 shadow">
@@ -44,39 +57,60 @@ const Navigation = () => {
           onClick={toggleMenu}
         />
       </div>
+
       <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
-        <div
-          className={`transition duration-500 ease-in-out ${menu} lg:block text-sm lg:flex-grow`}
-        >
-          <Link
-            to="/"
-            className="block mt-4 lg:inline-block lg:mt-0 text-gray-900 hover:text-gray-900 mr-4"
+        {isAuth ? (
+          <div
+            className={`transition duration-500 ease-in-out ${menu} lg:block text-sm lg:flex-grow`}
           >
-            Home
-          </Link>
-          <Link
-            to="/attendance"
-            className="block mt-4 lg:inline-block lg:mt-0 text-gray-900 hover:text-gray-900 mr-4"
+            <Link
+              to="/"
+              className="block mt-4 lg:inline-block lg:mt-0 text-gray-900 hover:text-gray-900 mr-4"
+            >
+              Home
+            </Link>
+            <Link
+              to="/attendance"
+              className="block mt-4 lg:inline-block lg:mt-0 text-gray-900 hover:text-gray-900 mr-4"
+            >
+              Attendance
+            </Link>
+          </div>
+        ) : (
+          <div
+            className={`transition duration-500 ease-in-out ${menu} lg:block text-sm lg:flex-grow`}
+          ></div>
+        )}
+
+        {isAuth ? (
+          <div
+            className={`transition duration-500 ease-in-out ${menu} lg:block flex flex-col items-start`}
           >
-            Attendance
-          </Link>
-        </div>
-        <div
-          className={`transition duration-500 ease-in-out ${menu} lg:block flex flex-col items-start`}
-        >
-          <Link
-            to="/login"
-            className="lg:transition lg:duration-500 lg:ease-in-out lg:transform lg:hover:scale-105 inline-block text-sm lg:px-4 py-2 leading-none rounded text-gray-900 mt-4 lg:mt-0"
+            <p
+              onClick={logout}
+              className="cursor-pointer lg:transition lg:duration-500 lg:ease-in-out lg:transform lg:hover:scale-105 inline-block text-sm lg:px-4 py-2 leading-none rounded text-gray-900 mt-4 lg:mt-0"
+            >
+              Logout
+            </p>
+          </div>
+        ) : (
+          <div
+            className={`transition duration-500 ease-in-out ${menu} lg:block flex flex-col items-start`}
           >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="lg:transition lg:transform lg:hover:scale-105 lg:duration-500 lg:ease-in-out lg:hover:bg-blue-600 lg:bg-blue-500 rounded-full inline-block text-sm lg:px-4 py-2 leading-none rounded text-gray-900 lg:text-white mt-4 lg:mt-0"
-          >
-            Register
-          </Link>
-        </div>
+            <Link
+              to="/login"
+              className="lg:transition lg:duration-500 lg:ease-in-out lg:transform lg:hover:scale-105 inline-block text-sm lg:px-4 py-2 leading-none rounded text-gray-900 mt-4 lg:mt-0"
+            >
+              Login
+            </Link>
+            <Link
+              to="/register"
+              className="lg:transition lg:transform lg:hover:scale-105 lg:duration-500 lg:ease-in-out lg:hover:bg-blue-600 lg:bg-blue-500 rounded-full inline-block text-sm lg:px-4 py-2 leading-none rounded text-gray-900 lg:text-white mt-4 lg:mt-0"
+            >
+              Register
+            </Link>
+          </div>
+        )}
       </div>
     </nav>
   );

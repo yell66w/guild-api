@@ -12,6 +12,9 @@ const Home = () => {
       params: {
         limit: 5,
       },
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
     setAttendances(res.data);
   };
