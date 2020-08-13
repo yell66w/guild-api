@@ -16,6 +16,7 @@ import { Attendance_User } from '../attendance-user/attendance_user.entity';
 import { Guild } from 'src/guild/guild.entity';
 import { ActivityCategory } from 'src/activities/activities.categories';
 import { AttendancesStatus } from './attendances.categories';
+import { GetAttendanceFilterDto } from './dto/get-attendance-filter.dto';
 
 @Injectable()
 export class AttendancesService {
@@ -23,10 +24,10 @@ export class AttendancesService {
     @InjectRepository(AttendancesRepository)
     private attendancesRepository: AttendancesRepository,
   ) {}
-  async getAttendances(): Promise<Attendance[]> {
-    return await this.attendancesRepository.find({
-      relations: ['participants', 'items'],
-    });
+  async getAttendances(
+    filterDto: GetAttendanceFilterDto,
+  ): Promise<Attendance[]> {
+    return await this.attendancesRepository.getAttendances(filterDto);
   }
   async getOne(id: number): Promise<Attendance> {
     const found = await this.attendancesRepository.findOne(id, {
