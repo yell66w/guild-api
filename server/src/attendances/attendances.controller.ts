@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  // UseGuards,
+  UseGuards,
   Put,
   Param,
   ParseUUIDPipe,
@@ -15,12 +15,12 @@ import { User } from '../users/users.entity';
 import { CreateAttendanceDto } from './dto/create-attendance.dto';
 import { AttendancesService } from './attendances.service';
 import { Attendance } from './attendances.entity';
-// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AttendanceValidationPipe } from './pipe/attendance-validation.pipe';
 import { UpdateAttendanceDto } from './dto/update-attendance.dto';
 import { GetAttendanceFilterDto } from './dto/get-attendance-filter.dto';
 
-// @UseGuards(new JwtAuthGuard())
+@UseGuards(new JwtAuthGuard())
 @Controller('attendances')
 export class AttendancesController {
   constructor(private attendancesService: AttendancesService) {}
