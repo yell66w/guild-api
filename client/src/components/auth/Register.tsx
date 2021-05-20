@@ -3,7 +3,6 @@ import { Link, Redirect } from "react-router-dom";
 import InputForm from "../misc/InputForm";
 import { GuildAPI } from "../API/GuildAPI";
 import { ToastContainer, toast } from "react-toastify";
-import "../../css/main.css";
 
 const Register = () => {
   const [data, setData] = useState({
